@@ -1,0 +1,37 @@
+package __TOP_LEVEL_PACKAGE__;
+
+import __ENTITY_LEVEL_PACKAGE__;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class __ENTITY_SERVICE__Impl implements __ENTITY_SERVICE__ {
+
+	/**
+	 * under code 
+	 * auto-created by max-service addons
+	 */
+	@Override
+	public void saveOrUpdate(Entity entity) {
+		if(entity.getId() == null) {
+			entity.persist();
+		}else{
+			entity.merge();
+		}
+	}
+
+	@Override
+	public void remove(Entity entity) {
+		entity.remove();
+	}
+
+	@Override
+	public Entity findById(Long id) {
+		return Entity.findAccount(id);
+	}
+
+	@Override
+	public EntityServiceResult findEntityEntries(int firstResult, int maxResults) {
+		return new EntityServiceResult(Entity.findEntityEntries(firstResult, maxResults),Entity.countAccounts(),null);
+	}
+}
