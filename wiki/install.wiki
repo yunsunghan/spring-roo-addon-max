@@ -6,8 +6,8 @@ spring-roo-addon-max 설치에 대해서 설명한다.
 
 
 = install =
- * > osgi start --url http://localhost/korra-tracker/addon/com.ks.spring.roo.addon.maxservice-0.1.0.M1.jar 
- *  > osgi start --url http://localhost/korra-tracker/addon/com.ks.spring.roo.addon.maxweb-0.1.0.M1.jar 
+ * > osgi start --url http://spring-roo-addon-max.googlecode.com/svn/trunk/test/addon/com.ks.spring.roo.addon.maxservice-0.1.0.M1.jar 
+ *  > osgi start --url http://spring-roo-addon-max.googlecode.com/svn/trunk/test/addon/com.ks.spring.roo.addon.maxweb-0.1.0.M1.jar 
  *  > osgi ps
 = uninstall =
  *  > osgi uninstall --bundleSymbolicName com.ks.spring.roo.addon.maxservice
