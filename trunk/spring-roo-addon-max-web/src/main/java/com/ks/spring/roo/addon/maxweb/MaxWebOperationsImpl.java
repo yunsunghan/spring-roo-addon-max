@@ -117,7 +117,7 @@ public class MaxWebOperationsImpl implements MaxWebOperations {
 	/** {@inheritDoc} */
 	public void setup() {
 		// Install the add-on Google code repository needed to get the annotation 
-		projectOperations.addRepository(new Repository("Max web Roo add-on repository", "Max web Roo add-on repository", "http://spring-roo-addon-max.googlecode.com/svn/trunk/spring-roo-addon-max-web"));
+		projectOperations.addRepository(new Repository("Max web Roo add-on repository", "Max web Roo add-on repository", "http://spring-roo-addon-max.googlecode.com/svn/trunk/test/addon/com.ks.spring.roo.addon.maxweb-0.1.0.M1.jar"));
 		List<Dependency> dependencies = new ArrayList<Dependency>();
 		// Install the dependency on the add-on jar (
 		dependencies.add(new Dependency("com.ks.spring.roo.addon.maxweb", "com.ks.spring.roo.addon.maxweb", "0.1.0.M1", DependencyType.JAR, DependencyScope.PROVIDED));
