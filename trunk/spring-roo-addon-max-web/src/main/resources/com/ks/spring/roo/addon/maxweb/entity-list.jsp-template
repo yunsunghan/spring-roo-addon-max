@@ -1,0 +1,112 @@
+<jsp:directive.page contentType="text/html;charset=UTF-8" />
+<jsp:directive.include file="/WEB-INF/views/__system/taglibs.jsp"/>
+<html>
+<head>
+<script type="text/javascript">
+	function checkForm() {
+	    //checkFile();
+		var f = document.getElementById("action_form");
+	    f.method="POST";		
+	    f.submit();
+	    return false;
+	}
+	function listen(evnt, elem, func) { 
+	    if (elem.addEventListener)  // W3C DOM 
+	        elem.addEventListener(evnt,func,false); 
+	    else if (elem.attachEvent) { // IE DOM 
+	         var r = elem.attachEvent("on"+evnt, func); 
+	    return r; 
+	    } 
+	    else window.alert('I\'m sorry Dave, I\'m afraid I can\'t do that.'); 
+	} 
+	
+	/*
+	window.onload=function(){
+		var el = document.getElementById("tbl_list");
+		listen("click", el, function() {
+				alert('링크를 눌렸군!!!');
+		});
+	};
+
+	*/
+	
+</script>
+</head>
+<body>
+<spring:url value="${FRONT_CTX}/accounts/excel" var="excel_url"/>
+<spring:url var="create_url" value="${FRONT_CTX}/accounts/create"/>
+		<div class="h2box">
+			<h2>Account 관리</h2>
+		</div>
+
+		<h3>Account목록</h3>
+
+		<div class="btnarea_top">
+			<div class="btn_rgt">
+				<span class="button whitebtn">
+					<a href="${excel_url}">엑셀다운받기</a>
+				</span>
+				<span class="button bluebtn">
+					<a href="${create_url}">Account등록</a>
+				</span>
+			</div>
+		</div>
+
+		<table class="tbl_list" summary="Account목록입니다." id="tbl_list">
+		<caption>Account목록</caption>
+		<col width="10%" />
+		<col width="10%" />
+		<col width="20%" />
+		<col width="10%" />
+		<col width="10%" />
+		<col width="20%" />
+		<col width="10%" />
+		<thead>
+		<tr>
+			<th class="first">번호</th>
+			<th>ID</th>
+			<th>이름</th>
+			<th>이메일</th>
+			<th>등록일자</th>
+			<th>파일명</th>
+			<th>수정/삭제</th>
+		</tr>
+		</thead>
+		<tbody>
+
+		<spring:url var="show" value="${FRONT_CTX}/accounts/show"/>
+		<spring:url var="img" value="/resources/"/>
+		<c:forEach items="${result.accountList}" var="account">
+		<tr> 
+			<td>${account.id}</td> 
+			<td>${account.id}</td> 
+			<td>${account.name}</td> 
+			<td> <a href="${show}/${account.id}">${account.email}</a></td>
+			
+			<td>
+			<fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" type="DATE" value="${account.writeDate}"/>
+			</td> 
+			<td>${account.fileViewName}</td> 
+			<td><a href="<spring:url value="${FRONT_CTX}/accounts/update/${account.id}"/>"><img src="${img}images/admin/btn_mod.gif" alt="수정" /></a> 
+			<a href="<spring:url value="${FRONT_CTX}/accounts/delete/${account.id}"/>"><img src="${img}images/admin/btn_del.gif" alt="삭제" /></a></td>
+		</tr>	
+		</c:forEach>
+		</tbody>
+		</table>
+		
+		<div class="paging">
+			<c:if test="${not empty result.pageView}">
+		    	${result.pageView}
+		    </c:if>  
+			<div class="btn_rgt">
+				<span class="button whitebtn">
+					<a href="${excel_url}">엑셀다운받기</a>
+				</span>
+				<span class="button bluebtn">
+					<a href="${create_url}">Account등록</a>
+				</span>
+			</div>
+		</div>
+	
+</body>
+</html>
