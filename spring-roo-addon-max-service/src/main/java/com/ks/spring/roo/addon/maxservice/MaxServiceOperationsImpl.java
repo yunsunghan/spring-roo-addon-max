@@ -137,7 +137,7 @@ public class MaxServiceOperationsImpl implements MaxServiceOperations {
 	/** {@inheritDoc} */
 	public void setup() {
 		// Install the add-on Google code repository needed to get the annotation 
-		projectOperations.addRepository(new Repository("Max service Roo add-on repository", "Max service Roo add-on repository", "http://spring-roo-addon-max.googlecode.com/svn/trunk/spring-roo-addon-max-service"));
+		projectOperations.addRepository(new Repository("Max service Roo add-on repository", "Max service Roo add-on repository", "http://spring-roo-addon-max.googlecode.com/svn/trunk/test/addon/com.ks.spring.roo.addon.maxservice-0.1.0.M1.jar"));
 		
 		List<Dependency> dependencies = new ArrayList<Dependency>();
 		
