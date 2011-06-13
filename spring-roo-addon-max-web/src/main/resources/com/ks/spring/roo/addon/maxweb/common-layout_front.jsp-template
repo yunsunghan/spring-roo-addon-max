@@ -1,0 +1,542 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<jsp:directive.page contentType="text/html;charset=UTF-8" />
+<jsp:directive.include file="/WEB-INF/views/__system/taglibs.jsp"/>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>${tbizpointUser.customerName} <spring:message code="app.title"/></title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+	<link rel="SHORTCUT ICON" href="${REQUEST_SERVER_PATH}/images/favicon.ico" />
+	<link rel="stylesheet" type="text/css" href="<spring:url value="/resources/styles/front/style.css"/>" media="screen, print" />
+	<script type="text/javascript" src="<spring:url value="/resources/scripts/common.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/resources/scripts/front/SA.library.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/resources/scripts/front/SA.ui.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/resources/scripts/front/trace.js"/>"></script>
+
+	<script type='text/javascript' src='<spring:url value="/remote/engine.js"/>'></script>
+	<script type='text/javascript' src='<spring:url value="/remote/util.js"/>'></script>
+
+	<%--김연민 추가 2011.04.08 --%>
+	<script type="text/javascript" src="<spring:url value="/resources/scripts/jquery/jquery-1.5.2.js" />"></script>
+
+	<c:set var="userLocale">
+		<c:out value="${pageContext.response.locale}" default="en" />
+	</c:set>
+	<script type="text/javascript">
+		var djConfig="${userLocale}";
+		var CTX='<spring:url value="/resources/" />';
+
+		function gotoUrlMenu(url, target){
+			var session = "";
+			if(url == null || url == "")
+				return false;
+
+			try{
+				WebTracing.sendTransport(url);
+			}
+			catch(e){
+				alert(e);
+			}
+
+			if(url.toLowerCase().indexOf("javascript:") == 0) {
+				eval(url);
+				return false;
+			}
+
+
+			if ( url.indexOf("google") != -1 ) {
+				goGoogle(url);
+			} else if ( url.indexOf("webfax.tbizpoint.co.kr") != -1 ) {
+				go_webfax(url);
+			} else if ( url.indexOf("www.tbizpoint.co.kr") != -1 ) {
+				go_portal(url);
+			} else if ( url.indexOf("eapp.tbizpoint.co.kr") != -1 ) {
+				go_approve(url,'list',target);
+			} else if ( url.indexOf("talk2us.tbizpoint.co.kr") != -1 ) {
+				go_sns(url);
+			} else if ( url.indexOf("www.tcloudbiz.com") != -1 ) {
+				go_cloudbiz(url);
+			} else {
+
+				var target = target.toLowerCase() || "_self";
+				if(target == "_self"){
+					document.location.href = url;
+				} else if(target=="recommand") {
+					Popup.Open(url,950,570,'recommand','false');
+				} else if(target=="ceobook") {
+					Popup.Open(url,770,800,'ceobook','false');
+				} else if(target=="ceofuture") {
+					Popup.Open(url,770,800,'ceofuture','false');
+				} else if(target=="webfax_pop") {
+					window.open(url);
+				} else if(target=="google") {
+					goGoogle(url);
+				}	else{
+					window.open(url);
+				}
+			}
+			return false;
+		}
+
+
+		function gotoUrl(url, target){
+
+			var session = "";
+			if(url == null || url == "")
+				return false;
+
+			try{
+				WebTracing.sendTransport(url);
+			}
+			catch(e){
+				alert(e);
+			}
+
+			if(url.toLowerCase().indexOf("javascript:") == 0) {
+				eval(url);
+				return false;
+			}
+
+			var target = target.toLowerCase() || "_self";
+			if(target == "_self"){
+				document.location.href = url;
+
+			} else if(target=="recommand") {
+				Popup.Open(url,950,570,'recommand','false');
+			} else if(target=="ceobook") {
+				Popup.Open(url,770,800,'ceobook','false');
+			} else if(target=="ceofuture") {
+				Popup.Open(url,770,800,'ceofuture','false');
+			} else if(target=="webfax_pop") {
+				window.open(url);
+			} else if(target=="google") {
+				goGoogle(url);
+			}	else{
+				window.open(url);
+			}
+
+			return false;
+		}
+
+		function gotoUrlForm(url, formname, target ){
+
+			var session = "";
+			if(url == null || url == "")
+				return false;
+
+			try{
+				WebTracing.sendTransport(url);
+			}
+			catch(e){
+				alert(e);
+			}
+
+			if(url.toLowerCase().indexOf("javascript:") == 0) {
+				eval(url);
+				return false;
+			}
+
+			//alert(url);
+			//document.getElementById(formname).action = url;
+			document.getElementById(formname).target = target;
+			document.getElementById(formname).submit();
+
+			return false;
+		}
+	</script>
+	<decorator:head/>
+</head>
+<body>
+<c:set var="gubunValue1" value="member_company"/>
+<c:set var="gubunValue2" value="top_menu"/>
+<c:set var="gubunValue3" value="all_service"/>
+<c:set var="gubunValue4" value="custom_menu"/>
+
+<c:if test="${tbizpointUser.memberIdentification eq 'GR' || tbizpointUser.memberIdentification eq 'GC' }">
+	<c:set var="gubunValue1" value="member_personal"/>
+	<c:set var="gubunValue2" value="top_menu02"/>
+	<c:set var="gubunValue3" value="all_service_personal"/>
+	<c:set var="gubunValue4" value="custom_menu02"/>
+</c:if>
+
+<span style="display:none;"><img id="traceImg" src="" /></span>
+<div id="container">
+	<div id="header">
+		<div id="${gubunValue1 }">
+		<h1>
+			<c:choose>
+				<c:when test="${tbizpointUser.memberIdentification ne 'GR' && tbizpointUser.memberIdentification ne 'GC' }">
+					<c:choose>
+						<c:when test="${tbizpointUser.corpLogo ne null}" >
+							<img src="<c:out value="${tbizpointUser.corpLogo}"  />" width="170" height="50" alt="<c:out value="${tbizpointUser.company}" />"/>
+						</c:when>
+						<c:otherwise>
+							<img src="<c:out value="${FRONT_IMAGE_PATH}/blank_logo.gif"  />" height="50" alt="<c:out value="${tbizpointUser.company}" />"/>
+						</c:otherwise>
+					</c:choose>
+					<a href="/" onclick="gotoUrlMenu('http://www.tbizpoint.co.kr','_self');return false;" class="tbiz"><img src="${FRONT_IMAGE_PATH}/tbiz_logo.gif" alt="TBizpoint" /></a>
+				</c:when>
+				<c:otherwise>
+					<a href="/" onclick="gotoUrlMenu('http://www.tbizpoint.co.kr','_self');return false;"><img src="${FRONT_IMAGE_PATH}/tbiz_logo.gif" alt="TBizpoint" /></a>
+				</c:otherwise>
+			</c:choose>
+		</h1>
+		<ul class="${gubunValue2 }">
+			<li class="first"><a href="${FRONT_CTX}" id="all_service_view"><img src="${FRONT_IMAGE_PATH}/txt/topmenu01.gif" alt="전체서비스" /></a></li>
+			<li><a href="/" onclick="gotoUrlMenu('http://blog.tbizpoint.co.kr','_blank');return false;"><img src="${FRONT_IMAGE_PATH}/txt/topmenu02.gif" alt="Blog" /></a></li>
+			<li><a href="/" onclick="gotoUrlMenu('http://twitter.com/tbizpoint','_blank');return false;"><img src="${FRONT_IMAGE_PATH}/txt/topmenu03.gif" alt="Twitter" /></a></li>
+		</ul>
+		<div class="hidden" id="${gubunValue3 }">
+			<div class="inner">
+				<h2><img src="${FRONT_IMAGE_PATH}/txt/all_service.gif" alt="T bizpoint 전체서비스 메뉴보기" /></h2>
+				<div class="wrap">
+					<ul class="tab">
+						<c:set var="siteMapListNotHasChildNodeCount" value="0" scope="page"></c:set>
+						<c:forEach var="siteMapListNotHasChildNode" items="${resultMenuService.wpMenuList}" varStatus="i">
+							<c:if test="${siteMapListNotHasChildNode.depth eq 1 and (siteMapListNotHasChildNode.downMenuCnt == null ? 0 : siteMapListNotHasChildNode.downMenuCnt) eq 0}">
+								<c:set var="siteMapListNotHasChildNodeCount" value="${siteMapListNotHasChildNodeCount + 1}" scope="page"></c:set>
+								<li <c:if test="${siteMapListNotHasChildNodeCount eq 1}">class="first"</c:if>>
+								<c:choose>
+									<c:when test="${not siteMapListNotHasChildNode.hasLicense}">
+										<c:choose>
+											<c:when test="${not empty siteMapListNotHasChildNode.notProductUrl }">
+												<a href="/" onclick="gotoUrlMenu('${siteMapListNotHasChildNode.notProductUrl}', '_blank'); return false;">
+												<c:out value="${siteMapListNotHasChildNode.menuName}"/>
+												</a>
+											</c:when>
+											<c:otherwise>
+												<c:out value="${siteMapListNotHasChildNode.menuName}"/>
+											</c:otherwise>
+										</c:choose>
+										<img src="${FRONT_IMAGE_PATH}/btn/not_buying.gif" alt="미구매" />
+									</c:when>
+									<c:otherwise>
+										<a href="/" onclick="gotoUrlMenu('${siteMapListNotHasChildNode.linkUrl}', '${siteMapListNotHasChildNode.linkTarget}'); return false;">
+										<c:out value="${siteMapListNotHasChildNode.menuName}"></c:out>
+										</a>
+									</c:otherwise>
+								</c:choose>
+								</li>
+							</c:if>
+						</c:forEach>
+
+					</ul>
+					<div class="cnt" id="">
+						<table>
+							<colgroup>
+								<col width="17%" />
+								<col />
+							</colgroup>
+							<tbody>
+								<c:forEach var="siteMapListHasChildNode1Depth" items="${resultMenuService.wpMenuList}" varStatus="i">
+									<c:if test="${siteMapListHasChildNode1Depth.depth eq 1 and (siteMapListHasChildNode1Depth.downMenuCnt == null ? 0 : siteMapListHasChildNode1Depth.downMenuCnt) gt 0}">
+										<tr>
+											<th>
+												<c:choose>
+													<c:when test="${not siteMapListHasChildNode1Depth.hasLicense}">
+														<c:choose>
+															<c:when test="${not empty emptysiteMapListHasChildNode1Depth.notProductUrl }">
+																<a href="/" onclick="gotoUrlMenu('${siteMapListHasChildNode1Depth.notProductUrl}', '_blank'); return false;">
+																<c:out value="${siteMapListHasChildNode1Depth.menuName}"/>
+																</a>
+															</c:when>
+															<c:otherwise>
+																<c:out value="${siteMapListHasChildNode1Depth.menuName}"/>
+															</c:otherwise>
+														</c:choose>
+														<img src="${FRONT_IMAGE_PATH}/btn/not_buying.gif" alt="미구매" />
+													</c:when>
+													<c:otherwise>
+														<a href="/" onclick="gotoUrlMenu('${siteMapListHasChildNode1Depth.linkUrl}', '${siteMapListHasChildNode1Depth.linkTarget}'); return false;">
+														<c:out value="${siteMapListHasChildNode1Depth.menuName}"></c:out>
+														</a>
+													</c:otherwise>
+												</c:choose>
+											</th>
+											<td>
+
+												<c:set var="siteMapListHasChildNode2DepthCount" value="0" scope="page"></c:set>
+												<c:forEach var="siteMapListHasChildNode2Depth" items="${resultMenuService.wpMenuList}" varStatus="j">
+													<c:if test="${siteMapListHasChildNode2Depth.upMenuCode eq siteMapListHasChildNode1Depth.menuCode}">
+														<c:set var="siteMapListHasChildNode2DepthCount" value="${siteMapListHasChildNode2DepthCount + 1}" scope="page"></c:set>
+														<span <c:if test="${siteMapListHasChildNode2DepthCount eq 1}">class="first"</c:if>>
+															<c:choose>
+																<c:when test="${not siteMapListHasChildNode2Depth.hasLicense}">
+																	<c:choose>
+																		<c:when test="${not empty siteMapListHasChildNode2Depth.notProductUrl }">
+																			<a href="/" onclick="gotoUrlMenu('${siteMapListHasChildNode2Depth.notProductUrl}', '_blank'); return false;">
+																			<c:out value="${siteMapListHasChildNode2Depth.menuName}"/>
+																			</a>
+																		</c:when>
+																		<c:otherwise>
+																			<c:out value="${siteMapListHasChildNode2Depth.menuName}"/>
+																		</c:otherwise>
+																	</c:choose>
+																	<img src="${FRONT_IMAGE_PATH}/btn/not_buying.gif" alt="미구매" />
+																</c:when>
+																<c:otherwise>
+																	<a href="/" onclick="gotoUrlMenu('${siteMapListHasChildNode2Depth.linkUrl}', '${siteMapListHasChildNode2Depth.linkTarget}'); return false;">
+																	<c:out value="${siteMapListHasChildNode2Depth.menuName}"></c:out>
+																	</a>
+																</c:otherwise>
+															</c:choose>
+														</span>
+													</c:if>
+												</c:forEach>
+											</td>
+										</tr>
+									</c:if>
+								</c:forEach>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<a class="close" href="#"><img src="${FRONT_IMAGE_PATH}/btn/close.gif" alt="close" /></a>
+			</div>
+		</div>
+
+		<ul id="custom_menu" class="${gubunValue4 }">
+			<li class="first"><a href="${REQUEST_SERVER_PATH}">Home</a></li>
+			<c:set var="moreCount" value="0" scope="page"></c:set>
+			<c:set var="serviceCount" value="0" scope="page"></c:set>
+			<c:forEach var="customer1DepthMenu" items="${tbizpointUser.tbizpointProducts}" varStatus="i">
+				<c:if test="${customer1DepthMenu.tbizpointProductExt.hasMore}">
+					<c:set var="moreCount" value="${moreCount + 1}" scope="page"></c:set>
+				</c:if>
+				<c:if test="${customer1DepthMenu.tbizpointProductExt.hasService}">
+					<c:set var="serviceCount" value="${serviceCount + 1}" scope="page"></c:set>
+				</c:if>
+				<c:if test="${customer1DepthMenu.tbizpointProductExt.hasMainMenu and (not empty customer1DepthMenu.tbizpointProduct or not empty customer1DepthMenu.tbizpointProductExt.menuLinkUrl)}">
+					<li>
+						<a href="/" onclick="gotoUrlMenu('${customer1DepthMenu.tbizpointProductExt.menuLinkUrl}', '${customer1DepthMenu.tbizpointProductExt.menuLinkTarget}'); return false;">
+							<c:out value="${customer1DepthMenu.tbizpointProductExt.menuName}"></c:out>
+						</a>
+						<c:if test="${not empty customer1DepthMenu.tbizpointProduct}">
+							<div class="box">
+								<div>
+									<span class="left"></span>
+										<ul>
+											<c:forEach var="customer2DepthMenu" items="${customer1DepthMenu.tbizpointProduct}" varStatus="j">
+												<c:if test="${customer2DepthMenu.tbizpointProductExt.hasMore}">
+													<c:set var="moreCount" value="${moreCount + 1}" scope="page"></c:set>
+												</c:if>
+												<c:if test="${customer2DepthMenu.tbizpointProductExt.hasService}">
+													<c:set var="serviceCount" value="${serviceCount + 1}" scope="page"></c:set>
+												</c:if>
+												<li <c:if test="${j.index eq 0}">class="first"</c:if>>
+													<a href="/" onclick="gotoUrlMenu('${customer2DepthMenu.tbizpointProductExt.menuLinkUrl}', '${customer2DepthMenu.tbizpointProductExt.menuLinkTarget}'); return false;">
+														<c:out value="${customer2DepthMenu.tbizpointProductExt.menuName}"></c:out>
+													</a>
+												</li>
+											</c:forEach>
+										</ul>
+									<span class="right"></span>
+								</div>
+							</div>
+						</c:if>
+					</li>
+				</c:if>
+			</c:forEach>
+
+			<c:if test="${moreCount gt 0}">
+				<li class="more" id="more_menu_hook">
+					<a href="${FRONT_CTX}" onclick="return false;"><img src="${FRONT_IMAGE_PATH}/btn/more.gif" alt="더보기" /></a>
+					<div id="more_menu" class="more_menu hidden">
+						<ul>
+							<c:set var="moreCount" value="0" scope="page"></c:set>
+							<c:forEach var="customer1DepthMenu" items="${tbizpointUser.tbizpointProducts}" varStatus="i">
+								<c:if test="${customer1DepthMenu.tbizpointProductExt.hasMore}">
+									<c:set var="moreCount" value="${moreCount + 1}" scope="page"></c:set>
+									<li <c:if test="${moreCount eq 1}">class="first"</c:if>>
+										<a href="/" onclick="gotoUrlMenu('${customer1DepthMenu.tbizpointProductExt.menuLinkUrl}', '${customer1DepthMenu.tbizpointProductExt.menuLinkTarget}'); return false;">
+											<c:out value="${customer1DepthMenu.tbizpointProductExt.menuName}"></c:out>
+										</a>
+									</li>
+								</c:if>
+								<c:forEach var="customer2DepthMenu" items="${customer1DepthMenu.tbizpointProduct}" varStatus="j">
+									<c:if test="${customer2DepthMenu.tbizpointProductExt.hasMore}">
+										<c:set var="moreCount" value="${moreCount + 1}" scope="page"></c:set>
+										<li <c:if test="${moreCount eq 1}">class="first"</c:if>>
+											<a href="/" onclick="gotoUrlMenu('${customer1DepthMenu.tbizpointProductExt.menuLinkUrl}', '${customer1DepthMenu.tbizpointProductExt.menuLinkTarget}'); return false;">
+												<c:out value="${customer2DepthMenu.tbizpointProductExt.menuName}"></c:out>
+											</a>
+										</li>
+									</c:if>
+								</c:forEach>
+							</c:forEach>
+						</ul>
+					</div>
+				</li>
+			</c:if>
+		</ul>
+		</div>
+
+		<div class="service">
+			<strong class="tit"><img src="${FRONT_IMAGE_PATH}/txt/service.gif" alt="주요 서비스" /></strong>
+			<c:if test="${serviceCount gt 0}">
+				<ul>
+					<c:set var="serviceCount" value="0" scope="page"></c:set>
+					<c:forEach var="customer1DepthMenu" items="${tbizpointUser.tbizpointProducts}" varStatus="i">
+						<c:if test="${customer1DepthMenu.tbizpointProductExt.hasService}">
+							<c:set var="serviceCount" value="${serviceCount + 1}" scope="page"></c:set>
+							<li <c:if test="${serviceCount eq 1}">class="first"</c:if>>
+								<a href="/" onclick="gotoUrlMenu('${customer1DepthMenu.tbizpointProductExt.menuLinkUrl}', '${customer1DepthMenu.tbizpointProductExt.menuLinkTarget}'); return false;">
+									<c:out value="${customer1DepthMenu.tbizpointProductExt.menuName}"></c:out>
+								</a>
+							</li>
+						</c:if>
+						<c:forEach var="customer2DepthMenu" items="${customer1DepthMenu.tbizpointProduct}" varStatus="j">
+							<c:if test="${customer2DepthMenu.tbizpointProductExt.hasService}">
+								<c:set var="serviceCount" value="${serviceCount + 1}" scope="page"></c:set>
+								<li <c:if test="${serviceCount eq 1}">class="first"</c:if>>
+									<a href="/" onclick="gotoUrlMenu('${customer2DepthMenu.tbizpointProductExt.menuLinkUrl}', '${customer2DepthMenu.tbizpointProductExt.menuLinkTarget}'); return false;">
+										<c:out value="${customer2DepthMenu.tbizpointProductExt.menuName}"></c:out>
+									</a>
+								</li>
+							</c:if>
+						</c:forEach>
+					</c:forEach>
+				</ul>
+			</c:if>
+		</div>
+
+		<div class="content">
+			<div class="login">
+				<p><strong>
+				<c:choose>
+					<c:when test="${fn:length(tbizpointUser.customerName) > 7}">
+						${fn:substring(tbizpointUser.customerName,0,7)}
+					</c:when>
+					<c:otherwise>
+						${tbizpointUser.customerName}
+					</c:otherwise>
+				</c:choose>
+				</strong>님 반갑습니다.</p>
+				<ul>
+					<li><a href="/" onclick="go_portal('${result.findPortal.myScrapDTO.linkUrl}'); return false;">My스크랩(${result.findPortal.myScrapDTO.count})</a></li>
+					<li><a href="/" onclick="go_portal('${result.findPortal.onlineCounselDTO.linkUrl}'); return false;">온라인상담내역(${result.findPortal.onlineCounselDTO.count})</a></li>
+				</ul>
+				<p class="btn">
+					<a href="<spring:url value="/userlogout"/>"><img src="${FRONT_IMAGE_PATH}/btn/logout.gif" alt="로그아웃" /></a>
+					<a href="/" onclick="go_portal('https://www.tbizpoint.co.kr/front/working/mypage/mypage/MyInfoModify.do'); return false;"><img src="${FRONT_IMAGE_PATH}/btn/mypage.gif" alt="마이페이지" /></a>
+				</p>
+			</div>
+			<div class="notice">
+				<h2>전사 공지사항</h2>
+				<c:choose>
+				<c:when test="${tbizpointUser.memberIdentification eq 'GR' or tbizpointUser.memberIdentification eq 'GC'}">
+				<div style="text-align:center;padding-top:40px;">
+					전사 공지사항은 기업회원에게 제공되는 서비스 입니다.
+				</div>
+				</c:when>
+				<c:otherwise>
+					<c:if test ="${fn:length(result.findPortal.noticeDTO.notices) == 0}">
+						<div style="text-align:center;padding-top:30px;">전사 공지사항이  없습니다.</div>
+					</c:if>
+				<ul id="ajax_notice">
+					<c:forEach items="${result.findPortal.noticeDTO.notices}" var="Notice" varStatus="loop" >
+						<li><a href="/" onclick="go_portal_notice('${Notice.linkUrl}'); return false;" >${Notice.title }</a> <span class="date">${Notice.date}</span></li>
+					</c:forEach>
+				</ul>
+				</c:otherwise>
+				</c:choose>
+
+				<c:if test="${tbizpointUser.memberIdentification eq 'RP' || tbizpointUser.memberIdentification eq 'CE' || tbizpointUser.memberIdentification eq 'GR' }">
+					<span class="more" style="margin-right:50px;">
+					<a href="/" onclick="go_portal_notice('${result.findPortal.noticeDTO.regUrl}');return false;">글쓰기</a>
+					</span>
+				</c:if>
+				<span class="more">
+				<a href="/" onclick="go_portal_notice('${result.findPortal.noticeDTO.listUrl}');return false;">더보기</a>
+				</span>
+			</div>
+			<div class="banner">
+				<div class="navi">
+					<span class="num">
+						<strong>0</strong> / 0
+					</span>
+					<a href="#" class="prev"><img src="${FRONT_IMAGE_PATH}/btn/prev.gif" alt="" /></a>
+					<a href="#" class="next"><img src="${FRONT_IMAGE_PATH}/btn/next.gif" alt="" /></a>
+				</div>
+				<div class="bnn">
+					<c:forEach items="${result.findBanner.headerBannerDTO.headerBanners}" var="HeaderBanner" varStatus="loop" >
+						<div class="list"><a href="/" onclick="gotoUrlMenu('${HeaderBanner.linkUrl}','${HeaderBanner.linkTarget}');return false;" ><img src="${HeaderBanner.imageUrl}" alt="${HeaderBanner.subject}" width="212" height="102"/></a></div>
+					</c:forEach>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- ============================================= 내용 시작 =============================================  -->
+	<decorator:body/>
+	<!-- ============================================= 내용 끝 =============================================  -->
+
+	<hr />
+
+	<div id="footer">
+		<div class="content">
+			<div class="notice">
+				<h2>Tbizpoint 공지사항 </h2>
+				<ul>
+					<c:forEach items="${result.findPortal.tbizpointNoticeDTO.tbizpointNotices}" var="tbizpointNotice" varStatus="loop" >
+						<li><a href="/" onclick="go_portal('${tbizpointNotice.linkUrl }'); return false;" target="_blank">${tbizpointNotice.title }</a> <span class="date">${tbizpointNotice.date}</span></li>
+					</c:forEach>
+				</ul>
+				<span class="more"><a href="/" onclick="go_portal('http://www.tbizpoint.co.kr/front/customercenter/customerNotice/searchNoticeList.do');return false;">더보기</a></span>
+			</div>
+			<div class="banner">
+			<c:forEach items="${result.findBanner.footerBannerDTO.footerBanners}" var="FooterBanner" varStatus="loop" >
+				<a href="/" onclick="gotoUrlMenu('${FooterBanner.linkUrl}','${FooterBanner.linkTarget}');return false;" class="item01"><img src="${FooterBanner.imageUrl}" alt="${FooterBanner.subject}" width="212" height="87"/></a>
+			</c:forEach>
+			</div>
+		</div>
+
+		<div class="copyright">
+			<strong class="logo"><img src="${FRONT_IMAGE_PATH}/tbiz_logo_foot.gif" alt="T Bizpoint" /></strong>
+			<ul class="menu01">
+				<li class="first"><a href="/" onclick="gotoUrlMenu('http://www.tbizpoint.co.kr/front/customercenter/customerFaq/searchFaqList.do','_self');return false;">FAQ</a></li>
+				<li><a href="/" onclick="gotoUrlMenu('http://www.tbizpoint.co.kr/front/customercenter/counsel/counselCreate.do','_self');return false;">온라인 상담</a></li>
+				<li><a href="/" onclick="gotoUrlMenu('http://www.tbizpoint.co.kr/front/customercenter/customerDownload/getDownloadList.do','_self');return false;">다운로드 센터</a></li>
+				<li><a href="/" onclick="gotoUrlMenu('http://www.tbizpoint.co.kr/front/customercenter/customerStatic/customerCenterInfo.do','_self');return false;">고객지원센터 안내</a></li>
+				<li><a href="/" onclick="gotoUrlMenu('http://www.tbizpoint.co.kr/front/business/businessStatic/bizInfo.do','_self');return false;">Tbizpoint 사업안내</a></li>
+			</ul>
+			<ul class="menu02">
+				<li class="first"><a href="/" onclick="gotoUrlMenu('http://www.tbizpoint.co.kr/front/common/frontCommon/personalInformationRaw.do');return false;" style="text-decoration:underline;">개인정보취급방침</a></li>
+				<li><a href="/" onclick="gotoUrlMenu('http://www.tbizpoint.co.kr/front/common/frontCommon/userTerms.do','_self');return false;">웹사이트 회원 이용 약관</a></li>
+				<li><a href="/" onclick="gotoUrlMenu('http://www.tbizpoint.co.kr/front/common/frontCommon/serviceTerms.do','_self');return false;">서비스 이용약관</a></li>
+				<li><a href="/" onclick="window.open('http://www.tbizpoint.co.kr/front/common/frontCommon/emailRefuse.do','email','width=450, height=500;'); return false;">이메일 무단수집 거부</a></li>
+				<li><a href="/" onclick="gotoUrlMenu('http://www.tbizpoint.co.kr/front/common/frontCommon/rssGuide.do','_self');return false;">RSS안내</a></li>
+				<li><a href="/" onclick="gotoUrlMenu('http://www.tbizpoint.co.kr/front/common/frontCommon/partnerInquiry.do','_self');return false;">제휴문의</a></li>
+			</ul>
+			<p>
+				서울시 중구 을지로 2가 11번지 총괄사장 : 하성민 고객센터:1600-2552 FAX:1600-5268 상담시간:평일 09:00~18:00<br />
+				COPYRIGHT＠SK TELECOM CO,LTD,ALL RIGHTS RESERVED
+			</p>
+			<!-- <p class="browser"><img src="${FRONT_IMAGE_PATH}/browser.gif" alt="이 사이트는 IE7.0버젼에 최적화 되어 있습니다." /></p> -->
+		</div>
+
+		<div id="family">
+			<a href="#" class="hook"><img src="${FRONT_IMAGE_PATH}/family_off.gif" alt="Family Site" /></a>
+				<ul class="hidden">
+					<li><a href="http://www.sktelecom.com/" target="_blank"><img src="<spring:url value="/resources/images/front"/>/family01.gif" alt="SK Telecom" /></a></li>
+					<li><a href="http://www.tworld.co.kr/" target="_blank"><img src="<spring:url value="/resources/images/front"/>/family02.gif" alt="T World" /></a></li>
+					<li><a href="http://www.biztworld.co.kr/" target="_blank"><img src="<spring:url value="/resources/images/front"/>/family03.gif" alt="Biz T World" /></a></li>
+					<li><a href="http://www.skbroadband.com/" target="_blank"><img src="<spring:url value="/resources/images/front"/>/family04.gif" alt="SK 브로드밴드" /></a></li>
+				</ul>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+//<![CDATA[
+// header banner rolling script
+var bnnRolling = new Rolling();
+bnnRolling.initialize({
+	hook: SA.classNames('banner', 'div', document.getElementById('header'))[0],
+	wrap: 'bnn', list: 'list', prev: 'prev', next: 'next', num: 'num'
+});
+//]]>
+</script>
+
+</body>
+</html>

@@ -1,0 +1,101 @@
+package __TOP_LEVEL_PACKAGE__;
+
+import java.io.UnsupportedEncodingException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import __ENTITY_LEVEL_PACKAGE__;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.util.UriUtils;
+import org.springframework.web.util.WebUtils;
+
+@RequestMapping("/__ENTITYS__")
+@Controller
+public class __ENTITY_CONTROLLER__ {
+
+	@Autowired EntityService entityService;
+	
+    @RequestMapping(method = RequestMethod.POST)
+    public String create(@Valid EntityServiceResult result, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+        if (bindingResult.hasErrors()) {
+            uiModel.addAttribute("result", result);
+            return "__ENTITYS__/create";
+        }
+        uiModel.asMap().clear();
+        entityService.save(result.getEntity());
+        return "redirect:/__ENTITYS__/" + encodeUrlPathSegment(result.getEntity().getId().toString(), httpServletRequest);
+    }
+    
+    @RequestMapping(params = "form", method = RequestMethod.GET)
+    public String createForm(Model uiModel) {
+        uiModel.addAttribute("result", new EntityServiceResult());
+        return "__ENTITYS__/create";
+    }
+    
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public String show(@PathVariable("id") Long id, Model uiModel) {
+        uiModel.addAttribute("result", entityService.findEntity(id));
+        uiModel.addAttribute("itemId", id);
+        return "__ENTITYS__/show";
+    }
+    
+    @RequestMapping(method = RequestMethod.GET)
+    public String list(	@RequestParam(value = "page", required = false) Integer page, 
+    					@RequestParam(value = "size", required = false) Integer size, 
+    					Model uiModel) {
+        if (page != null || size != null) {
+        	int sizeNo = size == null ? 10 : size.intValue();
+            uiModel.addAttribute("result", entityService.findEntityEntries(page == null ? 0 : (page.intValue() - 1) * sizeNo, sizeNo));
+        } else {
+            uiModel.addAttribute("result", entityService.findEntityEntries(1, 10));
+        }
+        return "__ENTITYS__/list";
+    }
+    
+    @RequestMapping(method = RequestMethod.PUT)
+    public String update(@Valid EntityServiceResult result, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+        if (bindingResult.hasErrors()) {
+            uiModel.addAttribute("result", result);
+            return "__ENTITYS__/update";
+        }
+        uiModel.asMap().clear();
+        entityService.update(result.getEntity());
+        return "redirect:/__ENTITYS__/" + encodeUrlPathSegment(result.getEntity().getId().toString(), httpServletRequest);
+    }
+    
+    @RequestMapping(value = "/{id}", params = "form", method = RequestMethod.GET)
+    public String updateForm(@PathVariable("id") Long id, Model uiModel) {
+        uiModel.addAttribute("result", entityService.findEntity(id));
+        return "__ENTITYS__/update";
+    }
+    
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    	entityService.findEntity(id).remove();
+        uiModel.asMap().clear();
+        uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
+        uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
+        return "redirect:/__ENTITYS__";
+    }
+
+    String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
+        String enc = httpServletRequest.getCharacterEncoding();
+        if (enc == null) {
+            enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
+        }
+        try {
+            pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
+        }
+        catch (UnsupportedEncodingException uee) {}
+        return pathSegment;
+    }
+}

@@ -1,0 +1,159 @@
+<jsp:directive.page contentType="text/html;charset=UTF-8" />
+<jsp:directive.include file="/WEB-INF/views/__system/taglibs.jsp"/>
+<html>
+<head>
+
+<script type='text/javascript' src='<spring:url value="/remote/interface/AjaxAccountService.js"/>'></script>
+<script type='text/javascript' src='<spring:url value="/remote/engine.js"/>'></script>
+<script type='text/javascript' src='<spring:url value="/remote/util.js"/>'></script>
+
+<script type="text/javascript">
+	
+var towId;
+var towIdCount = 0;
+var accouintListCell = [
+      function(account) { return account.id; },
+      function(account) { return account.name; },
+      function(account) { return account.email; }
+
+     ];	
+     
+     function getList(){
+		dwr.engine.setAsync(false);
+		AjaxAccountService.findAll(function(result){
+			var accountList = result.accountList;
+			// del	
+			var counts = $("list_body").rows.length-1;
+			for ( var j = counts; j >= 0; j-- ){
+				$("list_body").deleteRow(j);
+			};
+			alert('del...complete!');
+			// add
+			for(var i=0; i < accountList.length; i++){
+				 var arr = [accountList[i]];
+				$("list_body").appendChild(getAccountLow(i,arr));
+			}
+			alert('add...complete!');
+			
+		});	
+     }
+	function getAccountLow(_count,arr){
+		var _tr = dwr.util.addRows("list_body", arr , accouintListCell, 
+				{
+					rowCreator:function(options) {
+					    var row = document.createElement("tr");
+					    row.id = towId = "tr_"+towIdCount;
+					    towIdCount++;
+					    return row;
+					  },
+		            cellCreator:function(options) {
+						  var td = document.createElement("td");
+		                  td.style.height = 27;
+						  if(_count % 2){
+							  td.className = "td_v";
+						  }else{
+							  td.className = "t10";
+						  }
+		                   return td;
+		            }, escapeHtml:false
+		
+				});
+			var _tr = document.createElement("tr");
+			var _td = document.createElement("td");
+			//_td.colSpan=17;
+			//_td.className='td_h';
+			_tr.appendChild(_td);
+		return _tr;	
+	}
+
+    function getCal(){
+		AjaxAccountService.findCal("dev04@tbizdev.co.kr","",function(result){
+			alert(result);
+		});	
+     }	
+</script>
+
+<script type="text/javascript">
+	dwr.engine.setErrorHandler(errorHandler);
+	function errorHandler(msg) {
+		alert("["+msg+"]해당 정보를 얻을수 없습니다. 페이지를 '새로고침'해 주십시요.");
+	}
+	function getDate(str){
+		str = str.split("-");
+		myDate = new Date();
+		return myDate.setFullYear(str[0],str[1],str[2]); 
+	}	
+</script>
+</head>
+<body>
+
+		<div class="h2box">
+			<h2>Account 관리</h2>
+		</div>
+
+		<h3>Account 상세보기</h3>
+		<h4>Account 기본정보 </h4>
+
+		<table class="tbl_view" summary="Account 기본정보 입니다." style="margin-bottom:30px;">
+		<caption>Account 기본정보</caption>
+		<colgroup>
+		<col width="10%" />
+		<col width="10%" />
+		<col width="80%" />
+		</colgroup>
+		<tbody>
+		<tr>
+			<th colspan="2">아이디</th>
+			<td>${result.account.id}</td>
+		</tr>
+		<tr>
+			<th colspan="2">이름</th>
+			<td>${result.account.name}</td>
+		</tr>
+		<tr>
+			<th colspan="2">메일</th>
+			<td>${result.account.email}</td>
+		</tr>
+		</tbody>
+		</table>
+
+		<div class="paging">
+			<div class="btn_rgt">
+				<span class="button whitebtn">
+					<a href='<spring:url value="/accounts/list"/>'>목록으로</a>
+				</span> 
+				<span class="button whitebtn">
+					<a href='#' onclick="getList()">목록 가져오기</a>
+				</span> 
+			</div>
+		</div>
+		
+
+	<h3>Account 등록/수정</h3>
+		
+		<table class="tbl_list" summary="Account목록입니다." id="tbl_list">
+		<caption>Account목록</caption>
+		<col width="20%" />
+		<col width="50%" />
+		<col width="30%" />
+		<thead>
+		<tr>
+			<th class="first">번호</th>
+			<th>이름</th>
+			<th>이메일</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr id="list_body"> 
+			<td></td> 
+			<td></td> 
+			<td></td> 
+		</tr>	
+		</tbody>
+		</table>
+
+<div><a href="#" onclick="getCal()">Calendar 가져오기</a></div>   
+<div>direct get</div>
+${cal}
+</body>
+</html>

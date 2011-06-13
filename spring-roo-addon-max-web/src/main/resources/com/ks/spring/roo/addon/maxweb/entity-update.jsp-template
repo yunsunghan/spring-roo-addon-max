@@ -1,0 +1,72 @@
+<jsp:directive.page contentType="text/html;charset=UTF-8" />
+<jsp:directive.include file="/WEB-INF/views/__system/taglibs.jsp"/>
+<html>
+<head>
+<script type="text/javascript">
+	function checkForm() {
+	    //checkFile();
+		var f = document.getElementById("action_form");
+	    f.method="POST";
+	    f.submit();
+	    return false;
+	}
+</script>
+</head>
+<body>
+<!-- contents start -->
+<spring:url value="/accounts/update" var="form_url"/>
+<form:form action="${form_url}" method="POST" enctype="multipart/form-data" modelAttribute="result.account" id="action_form" onsubmit="return false;">
+<form:hidden path="id"/>
+		<div class="h2box">
+			<h2>Account 관리</h2>
+		</div>
+
+		<h3>Account 등록/수정</h3>
+		<h4>Account 기본정보 <span>* 필수 입력 항목 입니다. 빠짐 없이 작성해 주시기 바랍니다.</span></h4>
+
+		<table class="tbl_view" summary="Account 기본정보 입니다." style="margin-bottom:30px;">
+		<caption>Account 기본정보</caption>
+		<colgroup>
+		<col width="10%" />
+		<col width="10%" />
+		<col width="80%" />
+		</colgroup>
+		<tbody>
+		<tr>
+			<th colspan="2">아이디</th>
+			<td>${result.account.id}</td>
+		</tr>
+		<tr>
+			<th colspan="2">이름</th>
+			<td><form:input path="name"/><form:errors cssClass="errors" path="name"/></td>
+		</tr>
+		<tr>
+			<th colspan="2">이메일</th>
+			<td><form:input path="email"/><form:errors cssClass="errors" path="email"/></td>
+		</tr>
+		<tr>
+			<th colspan="2">파일업로드</th>
+			<td>
+				<input name="addFile" type="file" id="addFile" style="width:300px;" />${result.account.fileViewName}
+			</td>
+		</tr>
+		</tbody>
+		</table>
+
+		<div class="btnarea">
+			<div class="btn_cen">
+				<span class="button bluebtn">
+					<a href="#" onclick="checkForm()">수정하기</a>
+				</span>
+			</div>
+
+			<div class="btn_rgt02">
+				<span class="button whitebtn">
+					<a href='<spring:url value="/accounts/list"/>'>목록으로</a>
+				</span> 
+			</div>
+		</div>
+</form:form> 	
+<!-- contents end -->
+</body>
+</html>
