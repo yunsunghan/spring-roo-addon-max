@@ -12,13 +12,16 @@ public class __ENTITY_SERVICE__Impl implements __ENTITY_SERVICE__ {
 	 * auto-created by max-service addons
 	 */
 	@Override
-	public void saveOrUpdate(Entity entity) {
-		if(entity.getId() == null) {
-			entity.persist();
-		}else{
-			entity.merge();
-		}
+	public Entity save(Entity entity) {
+		entity.persist();
+		return entity;
 	}
+		
+	@Override
+	public Entity update(Entity entity) {
+		entity.merge();
+		return entity;
+	}	
 
 	@Override
 	public void remove(Entity entity) {
