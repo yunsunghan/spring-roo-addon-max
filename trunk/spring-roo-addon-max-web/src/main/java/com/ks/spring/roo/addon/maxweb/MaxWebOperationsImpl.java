@@ -1,27 +1,25 @@
 package com.ks.spring.roo.addon.maxweb;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-import org.springframework.roo.classpath.PhysicalTypeDetails;
-import org.springframework.roo.classpath.PhysicalTypeIdentifier;
-import org.springframework.roo.classpath.PhysicalTypeMetadata;
 import org.springframework.roo.classpath.PhysicalTypeMetadataProvider;
 import org.springframework.roo.classpath.TypeLocationService;
 import org.springframework.roo.classpath.TypeManagementService;
-import org.springframework.roo.classpath.details.MemberFindingUtils;
-import org.springframework.roo.classpath.details.MutableClassOrInterfaceTypeDetails;
-import org.springframework.roo.classpath.details.annotations.AnnotationMetadataBuilder;
 import org.springframework.roo.metadata.MetadataService;
 import org.springframework.roo.model.JavaType;
 import org.springframework.roo.process.manager.FileManager;
@@ -29,16 +27,10 @@ import org.springframework.roo.process.manager.MutableFile;
 import org.springframework.roo.project.Path;
 import org.springframework.roo.project.PathResolver;
 import org.springframework.roo.project.ProjectOperations;
-import org.springframework.roo.project.Dependency;
-import org.springframework.roo.project.DependencyScope;
-import org.springframework.roo.project.DependencyType;
-import org.springframework.roo.project.Repository;
 import org.springframework.roo.shell.Shell;
 import org.springframework.roo.support.util.Assert;
 import org.springframework.roo.support.util.FileCopyUtils;
 import org.springframework.roo.support.util.TemplateUtils;
-import org.springframework.roo.support.util.XmlUtils;
-import org.w3c.dom.Element;
 
 /**
  * Implementation of operations this add-on offers.
@@ -101,65 +93,21 @@ public class MaxWebOperationsImpl implements MaxWebOperations {
 		// Controller.java
 		map.put(pathResolver.getIdentifier(Path.SRC_MAIN_JAVA, webClazz.getFullyQualifiedTypeName().replace('.', separator)+".java" ),"EntityController.java-template");
 		// create.jsp
-		map.put(pathResolver.getIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF" + separator + "views" + separator + entityStrings + separator + "create.jsp" ),"entity-create.jsp-template");
+		map.put(pathResolver.getIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF" + separator + "views" + separator + "backoffice" + separator + entityStrings + separator + "create.jsp" ),"entity-create.jsp-template");
 		// update.jsp
-		map.put(pathResolver.getIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF" + separator + "views" + separator + entityStrings + separator + "update.jsp" ),"entity-update.jsp-template");
+		map.put(pathResolver.getIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF" + separator + "views" + separator + "backoffice" + separator + entityStrings + separator + "update.jsp" ),"entity-update.jsp-template");
 		// show.jsp
-		map.put(pathResolver.getIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF" + separator + "views" + separator + entityStrings + separator + "show.jsp" ),"entity-show.jsp-template");
+		map.put(pathResolver.getIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF" + separator + "views" + separator + "backoffice" + separator + entityStrings + separator + "show.jsp" ),"entity-show.jsp-template");
 		// list.jsp
-		map.put(pathResolver.getIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF" + separator + "views" + separator + entityStrings + separator + "list.jsp" ),"entity-list.jsp-template");
+		map.put(pathResolver.getIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF" + separator + "views" + separator + "backoffice" + separator + entityStrings + separator + "list.jsp" ),"entity-list.jsp-template");
 		
 		for (Entry<String, String> entry : map.entrySet()) {
-			templateSetup(webClazz, serviceClazz, entityStringA, entityStringa,entityStrings, entry);
+			templateSetup(webClazz, serviceClazz, entityStringA, entityStringa, entityStrings, entry);
 		}
-	}
-	
-	/** {@inheritDoc} */
-	public void setup() {
-		// Install the add-on Google code repository needed to get the annotation 
-		projectOperations.addRepository(new Repository("Max web Roo add-on repository", "Max web Roo add-on repository", "http://spring-roo-addon-max.googlecode.com/svn/trunk/test/addon/com.ks.spring.roo.addon.maxweb-0.1.0.M1.jar"));
-		List<Dependency> dependencies = new ArrayList<Dependency>();
-		// Install the dependency on the add-on jar (
-		dependencies.add(new Dependency("com.ks.spring.roo.addon.maxweb", "com.ks.spring.roo.addon.maxweb", "0.1.0.M1", DependencyType.JAR, DependencyScope.PROVIDED));
-		// Install dependencies defined in external XML file
-		for (Element dependencyElement : XmlUtils.findElements("/configuration/maxweb/dependencies/dependency", XmlUtils.getConfiguration(getClass()))) {
-			dependencies.add(new Dependency(dependencyElement));
-		}
-		// Add all new dependencies to pom.xml
-		projectOperations.addDependencies(dependencies);
-		
-		//////////////////////////////////////////////////////////////////////////////
-		
-		// common file
-		Map<String, String> map = new HashMap<String, String>();
-		// taglib.jsp
-		map.put(pathResolver.getIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF" + separator + "views" + separator + "__system" + separator + "taglibs.jsp" ),"common-system_taglibs.jsp-template");
-		// taglib.jsp
-		map.put(pathResolver.getIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF" + separator + "layouts" + separator + "admin.jsp" ),"common-layout_admin.jsp-template");
-		// front.jsp
-		map.put(pathResolver.getIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF" + separator + "layouts" + separator + "front.jsp" ),"common-layout_front.jsp-template");
-		
-		for (Entry<String, String> entry : map.entrySet()) {
-			commonSetup(entry);
-		}		
-	}
-
-	private void commonSetup(Entry<String, String> entry) {
-		MutableFile mutableFile = null;
-		String path = entry.getKey();
-		String file = entry.getValue();
-		if (fileManager.exists(path)){
-			mutableFile = fileManager.updateFile(path);
-		}else{
-			InputStream templateInputStream = TemplateUtils.getTemplate(getClass(), file);
-			try {
-				String input = FileCopyUtils.copyToString(new InputStreamReader(templateInputStream));
-				mutableFile = fileManager.createFile(path);
-				FileCopyUtils.copy(input.getBytes(), mutableFile.getOutputStream());
-			} catch (IOException ioe) {
-				throw new IllegalStateException("Unable to create '" + file + "'", ioe);
-			}
-		}
+		// properties
+		String entityFully = serviceClazz.getFullyQualifiedTypeName().replace("Service", "").replace("service", "domain");
+		//			new JavaType(entityFully);
+		insertI18nMessages(entityFully);
 	}
 	
 	private void templateSetup(JavaType webClazz, JavaType serviceClazz,
@@ -193,6 +141,57 @@ public class MaxWebOperationsImpl implements MaxWebOperations {
 			} catch (IOException ioe) {
 				throw new IllegalStateException("Unable to create '" + file + "'", ioe);
 			}
+		}
+	}
+	private void insertI18nMessages(String entityFully) {
+		String applicationProperties = pathResolver.getIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF/i18n/application_ko.properties");
+		MutableFile mutableApplicationProperties = null;
+		entityFully = entityFully.replace(".", "_").toLowerCase();
+		try {
+			if (fileManager.exists(applicationProperties)) {
+				mutableApplicationProperties = fileManager.updateFile(applicationProperties);
+				String originalData = convertStreamToString(mutableApplicationProperties.getInputStream());
+				BufferedWriter out = new BufferedWriter(new OutputStreamWriter(mutableApplicationProperties.getOutputStream()));
+				// entity class를 받아야 함.
+				out.write(originalData);
+				out.write(entityFully+"_id=Id\n");
+				out.write(entityFully+"_name=Name\n");
+				out.write(entityFully+"_email=Email\n");
+				out.close();
+
+			} else {
+				throw new IllegalStateException("Could not acquire " + applicationProperties);
+			}
+		} catch (Exception e) {
+			System.out.println("---> " + e.getMessage());
+			throw new IllegalStateException(e);
+		}
+
+	}
+
+	private String convertStreamToString(InputStream is) throws IOException {
+		/*
+		 * To convert the InputStream to String we use the Reader.read(char[]
+		 * buffer) method. We iterate until the Reader return -1 which means
+		 * there's no more data to read. We use the StringWriter class to
+		 * produce the string.
+		 */
+		if (is != null) {
+			Writer writer = new StringWriter();
+
+			char[] buffer = new char[1024];
+			try {
+				Reader reader = new BufferedReader(new InputStreamReader(is,"UTF-8"));
+				int n;
+				while ((n = reader.read(buffer)) != -1) {
+					writer.write(buffer, 0, n);
+				}
+			} finally {
+				is.close();
+			}
+			return writer.toString();
+		} else {
+			return "";
 		}
 	}	
 }

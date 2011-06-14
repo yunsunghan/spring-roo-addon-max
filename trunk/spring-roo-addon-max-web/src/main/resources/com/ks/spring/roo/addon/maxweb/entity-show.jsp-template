@@ -3,7 +3,7 @@
 <html>
 <head>
 
-<script type='text/javascript' src='<spring:url value="/remote/interface/AjaxAccountService.js"/>'></script>
+<script type='text/javascript' src='<spring:url value="/remote/interface/AjaxEntityService.js"/>'></script>
 <script type='text/javascript' src='<spring:url value="/remote/engine.js"/>'></script>
 <script type='text/javascript' src='<spring:url value="/remote/util.js"/>'></script>
 
@@ -12,16 +12,16 @@
 var towId;
 var towIdCount = 0;
 var accouintListCell = [
-      function(account) { return account.id; },
-      function(account) { return account.name; },
-      function(account) { return account.email; }
+      function(entity) { return entity.id; },
+      function(entity) { return entity.name; },
+      function(entity) { return entity.email; }
 
      ];	
      
      function getList(){
 		dwr.engine.setAsync(false);
-		AjaxAccountService.findAll(function(result){
-			var accountList = result.accountList;
+		AjaxEntityService.findAll(function(result){
+			var entityList = result.entityList;
 			// del	
 			var counts = $("list_body").rows.length-1;
 			for ( var j = counts; j >= 0; j-- ){
@@ -29,15 +29,15 @@ var accouintListCell = [
 			};
 			alert('del...complete!');
 			// add
-			for(var i=0; i < accountList.length; i++){
-				 var arr = [accountList[i]];
-				$("list_body").appendChild(getAccountLow(i,arr));
+			for(var i=0; i < entityList.length; i++){
+				 var arr = [entityList[i]];
+				$("list_body").appendChild(getEntityLow(i,arr));
 			}
 			alert('add...complete!');
 			
 		});	
      }
-	function getAccountLow(_count,arr){
+	function getEntityLow(_count,arr){
 		var _tr = dwr.util.addRows("list_body", arr , accouintListCell, 
 				{
 					rowCreator:function(options) {
@@ -67,7 +67,7 @@ var accouintListCell = [
 	}
 
     function getCal(){
-		AjaxAccountService.findCal("dev04@tbizdev.co.kr","",function(result){
+		AjaxEntityService.findCal("dev04@tbizdev.co.kr","",function(result){
 			alert(result);
 		});	
      }	
@@ -88,14 +88,14 @@ var accouintListCell = [
 <body>
 
 		<div class="h2box">
-			<h2>Account 관리</h2>
+			<h2>Entity 관리</h2>
 		</div>
 
-		<h3>Account 상세보기</h3>
-		<h4>Account 기본정보 </h4>
+		<h3>Entity 상세보기</h3>
+		<h4>Entity 기본정보 </h4>
 
-		<table class="tbl_view" summary="Account 기본정보 입니다." style="margin-bottom:30px;">
-		<caption>Account 기본정보</caption>
+		<table class="tbl_view" summary="Entity 기본정보 입니다." style="margin-bottom:30px;">
+		<caption>Entity 기본정보</caption>
 		<colgroup>
 		<col width="10%" />
 		<col width="10%" />
@@ -104,15 +104,15 @@ var accouintListCell = [
 		<tbody>
 		<tr>
 			<th colspan="2">아이디</th>
-			<td>${result.account.id}</td>
+			<td>${result.entity.id}</td>
 		</tr>
 		<tr>
 			<th colspan="2">이름</th>
-			<td>${result.account.name}</td>
+			<td>${result.entity.name}</td>
 		</tr>
 		<tr>
 			<th colspan="2">메일</th>
-			<td>${result.account.email}</td>
+			<td>${result.entity.email}</td>
 		</tr>
 		</tbody>
 		</table>
@@ -120,7 +120,7 @@ var accouintListCell = [
 		<div class="paging">
 			<div class="btn_rgt">
 				<span class="button whitebtn">
-					<a href='<spring:url value="/accounts/list"/>'>목록으로</a>
+					<a href='<spring:url value="/__ENTITYS__/list"/>'>목록으로</a>
 				</span> 
 				<span class="button whitebtn">
 					<a href='#' onclick="getList()">목록 가져오기</a>
@@ -129,10 +129,10 @@ var accouintListCell = [
 		</div>
 		
 
-	<h3>Account 등록/수정</h3>
+	<h3>Entity 등록/수정</h3>
 		
-		<table class="tbl_list" summary="Account목록입니다." id="tbl_list">
-		<caption>Account목록</caption>
+		<table class="tbl_list" summary="Entity목록입니다." id="tbl_list">
+		<caption>Entity목록</caption>
 		<col width="20%" />
 		<col width="50%" />
 		<col width="30%" />

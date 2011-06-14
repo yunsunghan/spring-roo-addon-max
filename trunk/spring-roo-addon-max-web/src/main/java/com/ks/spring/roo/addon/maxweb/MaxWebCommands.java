@@ -22,31 +22,13 @@ import org.springframework.roo.shell.CommandMarker;
 @Service
 public class MaxWebCommands implements CommandMarker { // All command types must implement the CommandMarker interface
 	
-	/**
-	 * Get a reference to the MaxwebOperations from the underlying OSGi container
-	 */
 	@Reference private MaxWebOperations operations;
-	
-	/**
-	 * This method is optional. It allows automatic command hiding in situations when the command should not be visible.
-	 * For example the 'entity' command will not be made available before the user has defined his persistence settings 
-	 * in the Roo shell or directly in the project.
-	 * 
-	 * You can define multiple methods annotated with {@link CliAvailabilityIndicator} if your commands have differing
-	 * visibility requirements.
-	 * 
-	 * @return true (default) if the command should be visible at this stage, false otherwise
-	 */
-	@CliAvailabilityIndicator({ "max install_web", "max web"})
+
+	@CliAvailabilityIndicator({"max web"})
 	public boolean isCommandAvailable() {
 		return operations.isCommandAvailable();
 	}
-	
-	/**
-	 * This method registers a command with the Roo shell. It also offers a mandatory command attribute.
-	 * 
-	 * @param type 
-	 */
+
 	@CliCommand(value = "max web", help = "Some helpful description")
 	public void web(
 			@CliOption(key = "class", mandatory = true, help = "The java type to apply this annotation to") JavaType webClazz,
@@ -54,13 +36,5 @@ public class MaxWebCommands implements CommandMarker { // All command types must
 			) {
 		operations.newMaxWebClass(webClazz,serviceClazz);
 	}
-	
-	/**
-	 * This method registers a command with the Roo shell. It has no command attribute.
-	 * 
-	 */
-	@CliCommand(value = "max install_web", help = "Setup Max web")
-	public void setup() {
-		operations.setup();
-	}
+
 }
