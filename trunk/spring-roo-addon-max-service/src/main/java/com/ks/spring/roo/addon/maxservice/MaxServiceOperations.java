@@ -9,17 +9,6 @@ import org.springframework.roo.model.JavaType;
  */
 public interface MaxServiceOperations {
 
-	/**
-	 * Indicate commands should be available
-	 * 
-	 * @return true if it should be available, otherwise false
-	 */
 	boolean isCommandAvailable();
-
-	/**
-	 * Annotate the provided Java type with the trigger of this add-on
-	 */
 	void newMaxServiceClass(JavaType serviceClazz, JavaType entityClazz);
-	
-	void setup();
 }

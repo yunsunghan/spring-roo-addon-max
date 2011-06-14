@@ -16,6 +16,8 @@ public class __ENTITY_SERVICE__Result {
 	private Long count;
 	private String pageView;
 	
+	public __ENTITY_SERVICE__Result() {
+	}
 	public __ENTITY_SERVICE__Result(Entity entity) {
 		this.entity = entity;
 	}

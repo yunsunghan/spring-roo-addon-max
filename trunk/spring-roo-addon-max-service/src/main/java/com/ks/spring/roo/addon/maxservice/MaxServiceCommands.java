@@ -37,7 +37,7 @@ public class MaxServiceCommands implements CommandMarker { // All command types 
 	 * 
 	 * @return true (default) if the command should be visible at this stage, false otherwise
 	 */
-	@CliAvailabilityIndicator({ "max install_service","max service"})
+	@CliAvailabilityIndicator({"max service"})
 	public boolean isCommandAvailable() {
 		return operations.isCommandAvailable();
 	}
@@ -52,12 +52,4 @@ public class MaxServiceCommands implements CommandMarker { // All command types 
 			@CliOption(key = "entity", mandatory = true, help = "create entity name") JavaType entityClazz) {
 		operations.newMaxServiceClass(serviceClazz,entityClazz);
 	}
-	/**
-	 * This method registers a command with the Roo shell. It has no command attribute.
-	 * 
-	 */
-	@CliCommand(value = "max install_service", help = "Setup Max Service addon")
-	public void setup() {
-		operations.setup();
-	}	
 }

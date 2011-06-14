@@ -7,7 +7,8 @@ public interface __ENTITY_SERVICE__ {
 	 * under code 
 	 * auto-created by max-service addons
 	 */
-	public void saveOrUpdate(Entity entity);
+	public Entity save(Entity entity);
+	public Entity update(Entity entity);
 	public void remove(Entity entity);
 	public Entity findById(Long id);
 	public __ENTITY_SERVICE__Result findEntityEntries(int firstResult, int maxResults);

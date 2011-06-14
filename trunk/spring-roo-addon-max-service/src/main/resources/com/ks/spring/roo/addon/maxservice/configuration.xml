@@ -1,12 +1,3 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <configuration>
-	<maxservice>
-		<dependencies>
-			<dependency>
-				<groupId>com.ks.spring.roo.addon.maxservice</groupId>
-				<artifactId>com.ks.spring.roo.addon.maxservice</artifactId>
-				 <version>0.1.0.M1</version>
-			</dependency>
-		</dependencies>
-	</maxservice>
 </configuration>

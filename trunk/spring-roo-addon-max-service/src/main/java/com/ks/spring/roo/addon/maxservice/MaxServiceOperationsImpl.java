@@ -133,23 +133,5 @@ public class MaxServiceOperationsImpl implements MaxServiceOperations {
 			}
 		}
 	}
-	
-	/** {@inheritDoc} */
-	public void setup() {
-		// Install the add-on Google code repository needed to get the annotation 
-		projectOperations.addRepository(new Repository("Max service Roo add-on repository", "Max service Roo add-on repository", "http://spring-roo-addon-max.googlecode.com/svn/trunk/test/addon/com.ks.spring.roo.addon.maxservice-0.1.0.M1.jar"));
-		
-		List<Dependency> dependencies = new ArrayList<Dependency>();
-		
-		// Install the dependency on the add-on jar (
-		dependencies.add(new Dependency("com.ks.spring.roo.addon.maxservice", "com.ks.spring.roo.addon.maxservice", "0.1.0.M1", DependencyType.JAR, DependencyScope.PROVIDED));
-		
-		// Install dependencies defined in external XML file
-		for (Element dependencyElement : XmlUtils.findElements("/configuration/maxservice/dependencies/dependency", XmlUtils.getConfiguration(getClass()))) {
-			dependencies.add(new Dependency(dependencyElement));
-		}
 
-		// Add all new dependencies to pom.xml
-		projectOperations.addDependencies(dependencies);
-	}
 }
