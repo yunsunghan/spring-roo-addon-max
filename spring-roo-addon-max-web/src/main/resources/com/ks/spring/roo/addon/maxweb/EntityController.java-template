@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import __ENTITY_LEVEL_PACKAGE__;
+import __ENTITY_LEVEL_PACKAGE__Result;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 
-@RequestMapping("/__ENTITYS__")
+@RequestMapping("/backoffice/__ENTITYS__")
 @Controller
 public class __ENTITY_CONTROLLER__ {
 
@@ -28,7 +29,7 @@ public class __ENTITY_CONTROLLER__ {
     public String create(@Valid EntityServiceResult result, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
             uiModel.addAttribute("result", result);
-            return "__ENTITYS__/create";
+            return "backoffice/__ENTITYS__/create";
         }
         uiModel.asMap().clear();
         entityService.save(result.getEntity());
@@ -38,14 +39,14 @@ public class __ENTITY_CONTROLLER__ {
     @RequestMapping(params = "form", method = RequestMethod.GET)
     public String createForm(Model uiModel) {
         uiModel.addAttribute("result", new EntityServiceResult());
-        return "__ENTITYS__/create";
+        return "backoffice/__ENTITYS__/create";
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String show(@PathVariable("id") Long id, Model uiModel) {
-        uiModel.addAttribute("result", entityService.findEntity(id));
+        uiModel.addAttribute("result", entityService.findById(id));
         uiModel.addAttribute("itemId", id);
-        return "__ENTITYS__/show";
+        return "backoffice/__ENTITYS__/show";
     }
     
     @RequestMapping(method = RequestMethod.GET)
@@ -58,14 +59,14 @@ public class __ENTITY_CONTROLLER__ {
         } else {
             uiModel.addAttribute("result", entityService.findEntityEntries(1, 10));
         }
-        return "__ENTITYS__/list";
+        return "backoffice/__ENTITYS__/list";
     }
     
     @RequestMapping(method = RequestMethod.PUT)
     public String update(@Valid EntityServiceResult result, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
             uiModel.addAttribute("result", result);
-            return "__ENTITYS__/update";
+            return "backoffice/__ENTITYS__/update";
         }
         uiModel.asMap().clear();
         entityService.update(result.getEntity());
@@ -74,13 +75,13 @@ public class __ENTITY_CONTROLLER__ {
     
     @RequestMapping(value = "/{id}", params = "form", method = RequestMethod.GET)
     public String updateForm(@PathVariable("id") Long id, Model uiModel) {
-        uiModel.addAttribute("result", entityService.findEntity(id));
-        return "__ENTITYS__/update";
+        uiModel.addAttribute("result", entityService.findById(id));
+        return "backoffice/__ENTITYS__/update";
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-    	entityService.findEntity(id).remove();
+    	entityService.findById(id).remove();
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());

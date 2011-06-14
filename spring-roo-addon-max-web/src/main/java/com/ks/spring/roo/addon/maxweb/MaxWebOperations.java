@@ -9,20 +9,6 @@ import org.springframework.roo.model.JavaType;
  */
 public interface MaxWebOperations {
 
-	/**
-	 * Indicate commands should be available
-	 * 
-	 * @return true if it should be available, otherwise false
-	 */
 	boolean isCommandAvailable();
-
-	/**
-	 * Annotate the provided Java type with the trigger of this add-on
-	 */
 	void newMaxWebClass(JavaType webClazz, JavaType serviceClazz);
-	
-	/**
-	 * Setup all add-on artifacts (dependencies in this case)
-	 */
-	void setup();
 }

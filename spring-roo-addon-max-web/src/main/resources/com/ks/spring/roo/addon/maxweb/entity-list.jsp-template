@@ -33,13 +33,13 @@
 </script>
 </head>
 <body>
-<spring:url value="${FRONT_CTX}/accounts/excel" var="excel_url"/>
-<spring:url var="create_url" value="${FRONT_CTX}/accounts/create"/>
+<spring:url value="${BACK_CTX}/__ENTITYS__/excel" var="excel_url"/>
+<spring:url var="create_url" value="${BACK_CTX}/__ENTITYS__/create"/>
 		<div class="h2box">
-			<h2>Account 관리</h2>
+			<h2>Entity 관리</h2>
 		</div>
 
-		<h3>Account목록</h3>
+		<h3>Entity목록</h3>
 
 		<div class="btnarea_top">
 			<div class="btn_rgt">
@@ -47,13 +47,13 @@
 					<a href="${excel_url}">엑셀다운받기</a>
 				</span>
 				<span class="button bluebtn">
-					<a href="${create_url}">Account등록</a>
+					<a href="${create_url}">Entity등록</a>
 				</span>
 			</div>
 		</div>
 
-		<table class="tbl_list" summary="Account목록입니다." id="tbl_list">
-		<caption>Account목록</caption>
+		<table class="tbl_list" summary="Entity목록입니다." id="tbl_list">
+		<caption>Entity목록</caption>
 		<col width="10%" />
 		<col width="10%" />
 		<col width="20%" />
@@ -74,21 +74,21 @@
 		</thead>
 		<tbody>
 
-		<spring:url var="show" value="${FRONT_CTX}/accounts/show"/>
+		<spring:url var="show" value="${BACK_CTX}/__ENTITYS__/show"/>
 		<spring:url var="img" value="/resources/"/>
-		<c:forEach items="${result.accountList}" var="account">
+		<c:forEach items="${result.entityList}" var="entity">
 		<tr> 
-			<td>${account.id}</td> 
-			<td>${account.id}</td> 
-			<td>${account.name}</td> 
-			<td> <a href="${show}/${account.id}">${account.email}</a></td>
+			<td>${entity.id}</td> 
+			<td>${entity.id}</td> 
+			<td>${entity.name}</td> 
+			<td> <a href="${show}/${entity.id}">${entity.email}</a></td>
 			
 			<td>
-			<fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" type="DATE" value="${account.writeDate}"/>
+			<fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" type="DATE" value="${entity.writeDate}"/>
 			</td> 
-			<td>${account.fileViewName}</td> 
-			<td><a href="<spring:url value="${FRONT_CTX}/accounts/update/${account.id}"/>"><img src="${img}images/admin/btn_mod.gif" alt="수정" /></a> 
-			<a href="<spring:url value="${FRONT_CTX}/accounts/delete/${account.id}"/>"><img src="${img}images/admin/btn_del.gif" alt="삭제" /></a></td>
+			<td>${entity.fileViewName}</td> 
+			<td><a href="<spring:url value="${BACK_CTX}/__ENTITYS__/update/${entity.id}"/>"><img src="${img}images/admin/btn_mod.gif" alt="수정" /></a> 
+			<a href="<spring:url value="${BACK_CTX}/__ENTITYS__/delete/${entity.id}"/>"><img src="${img}images/admin/btn_del.gif" alt="삭제" /></a></td>
 		</tr>	
 		</c:forEach>
 		</tbody>
@@ -103,7 +103,7 @@
 					<a href="${excel_url}">엑셀다운받기</a>
 				</span>
 				<span class="button bluebtn">
-					<a href="${create_url}">Account등록</a>
+					<a href="${create_url}">Entity등록</a>
 				</span>
 			</div>
 		</div>
