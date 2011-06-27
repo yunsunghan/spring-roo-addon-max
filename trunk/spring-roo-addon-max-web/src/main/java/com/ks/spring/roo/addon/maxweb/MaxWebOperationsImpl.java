@@ -13,19 +13,34 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.springframework.roo.addon.entity.EntityMetadata;
+import org.springframework.roo.classpath.PhysicalTypeIdentifier;
+import org.springframework.roo.classpath.PhysicalTypeMetadata;
 import org.springframework.roo.classpath.PhysicalTypeMetadataProvider;
 import org.springframework.roo.classpath.TypeLocationService;
 import org.springframework.roo.classpath.TypeManagementService;
+import org.springframework.roo.classpath.details.BeanInfoUtils;
+import org.springframework.roo.classpath.details.ClassOrInterfaceTypeDetails;
+import org.springframework.roo.classpath.details.FieldMetadata;
+import org.springframework.roo.classpath.details.MemberFindingUtils;
+import org.springframework.roo.classpath.details.MethodMetadata;
+import org.springframework.roo.classpath.scanner.MemberDetails;
+import org.springframework.roo.classpath.scanner.MemberDetailsScanner;
+import org.springframework.roo.metadata.MetadataDependencyRegistry;
+import org.springframework.roo.metadata.MetadataIdentificationUtils;
 import org.springframework.roo.metadata.MetadataService;
+import org.springframework.roo.model.JavaSymbolName;
 import org.springframework.roo.model.JavaType;
 import org.springframework.roo.process.manager.FileManager;
 import org.springframework.roo.process.manager.MutableFile;
@@ -33,8 +48,10 @@ import org.springframework.roo.project.Path;
 import org.springframework.roo.project.PathResolver;
 import org.springframework.roo.project.ProjectOperations;
 import org.springframework.roo.shell.Shell;
+import org.springframework.roo.support.logging.HandlerUtils;
 import org.springframework.roo.support.util.Assert;
 import org.springframework.roo.support.util.FileCopyUtils;
+import org.springframework.roo.support.util.StringUtils;
 import org.springframework.roo.support.util.TemplateUtils;
 import org.w3c.dom.Document;
 
@@ -57,9 +74,14 @@ public class MaxWebOperationsImpl implements MaxWebOperations {
 	@Reference private FileManager fileManager;
 	@Reference private PathResolver pathResolver;
 	@Reference private Shell shell;
-	private static char separator = File.separatorChar;
-//	private BeanInfoMetadata beanInfoMetadata;
 	
+	@Reference private MetadataDependencyRegistry metadataDependencyRegistry;
+	@Reference private MemberDetailsScanner memberDetailsScanner;
+	
+	private static char separator = File.separatorChar;
+//	private JavaBeanMetadata beanInfoMetadata;
+	private static final Logger logger = HandlerUtils.getLogger(MaxWebOperationsImpl.class);
+	private JavaType entity;
 	
 	/** {@inheritDoc} */
 	public boolean isCommandAvailable() {
@@ -72,12 +94,7 @@ public class MaxWebOperationsImpl implements MaxWebOperations {
 		// Use Roo's Assert type for null checks
 		Assert.notNull(webClazz, "serviceClazz Java type required");
 		Assert.notNull(serviceClazz, "entityClazz Java type required");
-
-		String entityStringA = serviceClazz.getSimpleTypeName().replace("Service", "");
-		String entityStringa = entityStringA.toLowerCase();
-		String entityStrings = entityStringa + "s";
-		
-		
+		this.entity = new JavaType(serviceClazz.getFullyQualifiedTypeName().replace("Service", "").replace(".service.", ".domain."));
 		// Retrieve metadata for the Java source type the annotation is being added to
 		String id = physicalTypeMetadataProvider.findIdentifier(serviceClazz);
 		if (id == null) {
@@ -87,31 +104,25 @@ public class MaxWebOperationsImpl implements MaxWebOperations {
 		Map<String, String> map = new HashMap<String, String>();
 		// 1) Controller.java
 		map.put(pathResolver.getIdentifier(Path.SRC_MAIN_JAVA, webClazz.getFullyQualifiedTypeName().replace('.', separator)+".java" ),"EntityController.java-template");
+		// order create java file ....
+		
 		for (Entry<String, String> entry : map.entrySet()) {
-			templateSetup(webClazz, serviceClazz, entityStringA, entityStringa, entityStrings, entry);
+			templateSetup(webClazz, serviceClazz, entity, entry);
 		}
 		
 		// 2) jsp
 		// We need to lookup the metadata for the entity we are creating
-		String beanInfoMetadataKey = "Account.java";
 //		BeanInfoMetadata beanInfoMetadata = (BeanInfoMetadata) metadataService.get(beanInfoMetadataKey);
 //		this.beanInfoMetadata = beanInfoMetadata;
-		
-//		List<FieldMetadata> elegibleFields = getElegibleFields();
-		List<String> elegibleFields = new ArrayList<String>();
-		elegibleFields.add("name");
-		elegibleFields.add("email");
 		////////////////////////////////////////////////////////////////////////////////////
-		String entityString = "net.max.domain.Account";
-		
+		List<FieldMetadata> elegibleFields = getEligibleFieldMetadata(null);
+		////////////////////////////////////////////////////////////////////////////////////
 //		EntityMetadata entityMetadata = (EntityMetadata) metadataService.get(entityString);
 		EntityMetadata entityMetadata = null;
 		
-		JspDocumentHelper helper = new JspDocumentHelper(metadataService, entityString, entityMetadata, elegibleFields);
+		JspDocumentHelper helper = new JspDocumentHelper(metadataService, entity, entityMetadata, elegibleFields);
 		
-		
-		
-		String destinationDirectory = pathResolver.getIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF/views/backoffice/" + entityStrings);
+		String destinationDirectory = pathResolver.getIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF/views/backoffice/" + entity.getSimpleTypeName().toLowerCase()+"s");
 		if (!fileManager.exists(destinationDirectory)) {
 			fileManager.createDirectory(destinationDirectory);
 		} else {
@@ -146,15 +157,12 @@ public class MaxWebOperationsImpl implements MaxWebOperations {
 			writeToDiskIfNecessary(listPath3, helper.getUpdateDocument());
 //		}
 		
-		
-		
-		
 		////////////////////////////////////////////////////////////////////////////////////
 		
 		// properties
-		String entityFully = serviceClazz.getFullyQualifiedTypeName().replace("Service", "").replace("service", "domain");
+//		String entityFully = serviceClazz.getFullyQualifiedTypeName().replace("Service", "").replace("service", "domain");
 		//			new JavaType(entityFully);
-		insertI18nMessages(entityFully);
+		insertI18nMessages(entity);
 	}
 
 	/** return indicates if disk was changed (ie updated or created) */
@@ -202,9 +210,7 @@ public class MaxWebOperationsImpl implements MaxWebOperations {
 //	private List<FieldMetadata> getElegibleFields() {
 //		List<FieldMetadata> fields = new ArrayList<FieldMetadata>();
 //		List<MethodMetadata> fieldsOrg = new ArrayList<MethodMetadata>();
-////		fieldsOrg.add(metadataService.get("").new MethodMetadata());
-////		for (MethodMetadata method : beanInfoMetadata.getPublicAccessors(false)) {
-//		for (MethodMetadata method : fieldsOrg) {
+//		for (MethodMetadata method : beanInfoMetadata.getPublicAccessors(false)) {
 //			
 ////			JavaSymbolName propertyName = beanInfoMetadata.getPropertyNameForJavaBeanMethod(method);
 ////			FieldMetadata field = beanInfoMetadata.getFieldForPropertyName(propertyName);
@@ -228,6 +234,50 @@ public class MaxWebOperationsImpl implements MaxWebOperations {
 //		return fields;
 //	}
 
+	public List<FieldMetadata> getEligibleFieldMetadata(MemberDetails memberDetails) {
+		logger.warning("[MaxLog]-param memberDetails("+entity.getFullyQualifiedTypeName()+") : "+memberDetails);
+		if(memberDetails == null) memberDetails = getMemberDetails(entity);
+//		if(metadataIdentificationString == null) metadataIdentificationString = "javax.persistence.Id";
+		
+		Assert.notNull(memberDetails, "Member details required");
+		
+		Map<JavaSymbolName, FieldMetadata> fields = new LinkedHashMap<JavaSymbolName, FieldMetadata>();
+		for (MethodMetadata method : MemberFindingUtils.getMethods(memberDetails)) {
+			// Only interested in accessors
+			if (!BeanInfoUtils.isAccessorMethod(method)) {
+				continue;
+			}
+			JavaSymbolName propertyName = BeanInfoUtils.getPropertyNameForJavaBeanMethod(method);
+			FieldMetadata field = BeanInfoUtils.getFieldForPropertyName(memberDetails, propertyName);
+			if (field == null || !BeanInfoUtils.hasAccessorAndMutator(field, memberDetails)) {
+				continue;
+			}
+//			registerDependency(method.getDeclaredByMetadataId(), metadataIdentificationString);
+			if (!fields.containsKey(propertyName)) {
+				fields.put(propertyName, field);
+			}
+		}
+		return Collections.unmodifiableList(new ArrayList<FieldMetadata>(fields.values()));
+	}	
+	
+	
+	
+	public MemberDetails getMemberDetails(JavaType javaType) {
+		PhysicalTypeMetadata physicalTypeMetadata = (PhysicalTypeMetadata) metadataService.get(PhysicalTypeIdentifier.createIdentifier(javaType, Path.SRC_MAIN_JAVA));
+		Assert.notNull(physicalTypeMetadata, "Unable to obtain physical type metadata for type " + javaType.getFullyQualifiedTypeName());
+		ClassOrInterfaceTypeDetails classOrInterfaceDetails = (ClassOrInterfaceTypeDetails) physicalTypeMetadata.getMemberHoldingTypeDetails();
+		MemberDetails memberDetails = memberDetailsScanner.getMemberDetails(javaType.getFullyQualifiedTypeName(), classOrInterfaceDetails);
+		logger.warning("[MaxLog]-getMemberDetails javatype : "+javaType);
+		logger.warning("[MaxLog]-memberDetails : "+memberDetails);
+		logger.warning("[MaxLog]-classOrInterfaceDetails : "+classOrInterfaceDetails);
+		return memberDetails;
+	}
+//	private void registerDependency(String upstreamDependency, String downStreamDependency) {
+//		if (metadataDependencyRegistry != null && StringUtils.hasText(upstreamDependency) && StringUtils.hasText(downStreamDependency) && !upstreamDependency.equals(downStreamDependency) && !MetadataIdentificationUtils.getMetadataClass(downStreamDependency).equals(MetadataIdentificationUtils.getMetadataClass(upstreamDependency))) {
+//			metadataDependencyRegistry.registerDependency(upstreamDependency, downStreamDependency);
+//		}
+//	}
+	
 //	private boolean hasMutator(FieldMetadata fieldMetadata) {
 //		for (MethodMetadata mutator : beanInfoMetadata.getPublicMutators()) {
 //			if (fieldMetadata.equals(beanInfoMetadata.getFieldForPropertyName(beanInfoMetadata.getPropertyNameForJavaBeanMethod(mutator)))) return true;
@@ -235,13 +285,14 @@ public class MaxWebOperationsImpl implements MaxWebOperations {
 //		return false;
 //	}
 	
-	private void templateSetup(JavaType webClazz, JavaType serviceClazz,
-			String entityStringA, String entityStringa, String entityStrings,
-			Entry<String, String> entry) {
+	private void templateSetup(JavaType webClazz, JavaType serviceClazz, JavaType entity, Entry<String, String> entry) {
+		
 		MutableFile mutableFile = null;
-
 		String path = entry.getKey();
 		String file = entry.getValue();
+		String entityStringA = entity.getSimpleTypeName();
+		String entityStringa = entityStringA.toLowerCase();
+		String entityStrings = entityStringa + "s";		
 		
 		if (fileManager.exists(path)){
 			mutableFile = fileManager.updateFile(path);
@@ -268,10 +319,10 @@ public class MaxWebOperationsImpl implements MaxWebOperations {
 			}
 		}
 	}
-	private void insertI18nMessages(String entityFully) {
+	private void insertI18nMessages(JavaType entity) {
 		String applicationProperties = pathResolver.getIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF/i18n/application_ko.properties");
 		MutableFile mutableApplicationProperties = null;
-		entityFully = entityFully.replace(".", "_").toLowerCase();
+		String entityFully = entity.getFullyQualifiedTypeName().replace(".", "_").toLowerCase();
 		try {
 			if (fileManager.exists(applicationProperties)) {
 				mutableApplicationProperties = fileManager.updateFile(applicationProperties);
@@ -279,9 +330,9 @@ public class MaxWebOperationsImpl implements MaxWebOperations {
 				BufferedWriter out = new BufferedWriter(new OutputStreamWriter(mutableApplicationProperties.getOutputStream()));
 				// entity class를 받아야 함.
 				out.write(originalData);
-				out.write(entityFully+"_id=Id\n");
-				out.write(entityFully+"_name=Name\n");
-				out.write(entityFully+"_email=Email\n");
+//				out.write(entityFully+"_id=Id\n");
+//				out.write(entityFully+"_name=Name\n");
+//				out.write(entityFully+"_email=Email\n");
 				out.close();
 
 			} else {

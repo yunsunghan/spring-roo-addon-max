@@ -19,13 +19,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 
+//import com.ks.spring.roo.addon.maxweb.metadata.RooMaxWeb;
+
+//@RooMaxWeb(targetObject = Entity.class)
 @RequestMapping("/backoffice/__ENTITYS__")
 @Controller
 public class __ENTITY_CONTROLLER__ {
 
 	@Autowired EntityService entityService;
 	
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value="create", method = RequestMethod.POST)
     public String create(@Valid EntityServiceResult result, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
             uiModel.addAttribute("result", result);
@@ -36,13 +39,13 @@ public class __ENTITY_CONTROLLER__ {
         return "redirect:/__ENTITYS__/" + encodeUrlPathSegment(result.getEntity().getId().toString(), httpServletRequest);
     }
     
-    @RequestMapping(params = "form", method = RequestMethod.GET)
+    @RequestMapping(value="create", method = RequestMethod.GET)
     public String createForm(Model uiModel) {
         uiModel.addAttribute("result", new EntityServiceResult());
         return "backoffice/__ENTITYS__/create";
     }
     
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "show/{id}", method = RequestMethod.GET)
     public String show(@PathVariable("id") Long id, Model uiModel) {
         uiModel.addAttribute("result", entityService.findById(id));
         uiModel.addAttribute("itemId", id);
@@ -57,12 +60,12 @@ public class __ENTITY_CONTROLLER__ {
         	int sizeNo = size == null ? 10 : size.intValue();
             uiModel.addAttribute("result", entityService.findEntityEntries(page == null ? 0 : (page.intValue() - 1) * sizeNo, sizeNo));
         } else {
-            uiModel.addAttribute("result", entityService.findEntityEntries(1, 10));
+            uiModel.addAttribute("result", entityService.findEntityEntries(0, 10));
         }
         return "backoffice/__ENTITYS__/list";
     }
     
-    @RequestMapping(method = RequestMethod.PUT)
+    @RequestMapping(value="update", method = RequestMethod.POST)
     public String update(@Valid EntityServiceResult result, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
             uiModel.addAttribute("result", result);
@@ -73,17 +76,17 @@ public class __ENTITY_CONTROLLER__ {
         return "redirect:/__ENTITYS__/" + encodeUrlPathSegment(result.getEntity().getId().toString(), httpServletRequest);
     }
     
-    @RequestMapping(value = "/{id}", params = "form", method = RequestMethod.GET)
+    @RequestMapping(value = "update/{id}", method = RequestMethod.GET)
     public String updateForm(@PathVariable("id") Long id, Model uiModel) {
         uiModel.addAttribute("result", entityService.findById(id));
         return "backoffice/__ENTITYS__/update";
     }
     
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "delete/{id}", method = RequestMethod.GET)
     public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
     	entityService.findById(id).remove();
         uiModel.asMap().clear();
-        uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
+        uiModel.addAttribute("page", (page == null) ? "0" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
         return "redirect:/__ENTITYS__";
     }
