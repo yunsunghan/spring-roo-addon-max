@@ -15,7 +15,7 @@
 </script>
 </head>
 <body>
-<spring:url value="${BACK_CTX}/__ENTITYS__/excel" var="excel_url"/>
+<spring:url var="excel_url" value="${BACK_CTX}/__ENTITYS__/excel"/>
 <spring:url var="create_url" value="${BACK_CTX}/__ENTITYS__/create"/>
 		<div class="h2box">
 			<h2>Entity 관리</h2>
@@ -69,8 +69,28 @@
 			<fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" type="DATE" value="${entity.writeDate}"/>
 			</td> 
 			<td>${entity.fileViewName}</td> 
-			<td><a href="<spring:url value="${BACK_CTX}/__ENTITYS__/update/${entity.id}"/>"><img src="${img}images/admin/btn_mod.gif" alt="수정" /></a> 
-			<a href="<spring:url value="${BACK_CTX}/__ENTITYS__/delete/${entity.id}"/>"><img src="${img}images/admin/btn_del.gif" alt="삭제" /></a></td>
+			
+			
+			//================ show 
+<c:url value="/account/${account.id}" var="show_form_url"></c:url>
+<c:url value="${img}/images/blue/backoffice/btn_view.gif" var="show_image_url"></c:url>
+<form:form action="${show_form_url}" method="GET">
+<input alt="Show account" src="${show_image_url}" title="Show account" type="image" value="Show account">
+</form:form>
+</td><td>
+			
+			<td>
+			<spring:url value="${BACK_CTX}/__ENTITYS__/show/${entity.id}" var="show_url"/>
+			<a href="${show_url}"><img src="${img}images/admin/btn_view.gif" alt="보기" /></a>
+			
+			
+			 
+			<spring:url value="${BACK_CTX}/__ENTITYS__/update/${entity.id}" var="update_url"/>
+			<a href="${update_url}"><img src="${img}images/admin/btn_mod.gif" alt="수정" /></a> 
+			
+			<a href="<spring:url value="${BACK_CTX}/__ENTITYS__/delete/${entity.id}"/>"><img src="${img}images/admin/btn_del.gif" alt="삭제" /></a>
+			
+			</td>
 		</tr>	
 		</c:forEach>
 		</tbody>
