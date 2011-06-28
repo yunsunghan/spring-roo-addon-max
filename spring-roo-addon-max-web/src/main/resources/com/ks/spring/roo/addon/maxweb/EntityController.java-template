@@ -84,7 +84,7 @@ public class __ENTITY_CONTROLLER__ {
     
     @RequestMapping(value = "delete/{id}", method = RequestMethod.GET)
     public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-    	entityService.findById(id).remove();
+    	entityService.findById(id).getEntity().remove();
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "0" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
