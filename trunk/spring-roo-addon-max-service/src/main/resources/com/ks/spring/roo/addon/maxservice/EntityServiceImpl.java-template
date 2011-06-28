@@ -12,15 +12,15 @@ public class __ENTITY_SERVICE__Impl implements __ENTITY_SERVICE__ {
 	 * auto-created by max-service addons
 	 */
 	@Override
-	public Entity save(Entity entity) {
+	public __ENTITY_SERVICE__Result save(Entity entity) {
 		entity.persist();
-		return entity;
+		return new __ENTITY_SERVICE__Result(entity);
 	}
 		
 	@Override
-	public Entity update(Entity entity) {
+	public __ENTITY_SERVICE__Result update(Entity entity) {
 		entity.merge();
-		return entity;
+		return new __ENTITY_SERVICE__Result(entity);
 	}	
 
 	@Override
@@ -29,12 +29,12 @@ public class __ENTITY_SERVICE__Impl implements __ENTITY_SERVICE__ {
 	}
 
 	@Override
-	public Entity findById(Long id) {
-		return Entity.findAccount(id);
+	public __ENTITY_SERVICE__Result findById(Long id) {
+		return new __ENTITY_SERVICE__Result(Entity.findAccount(id));
 	}
 
 	@Override
-	public EntityServiceResult findEntityEntries(int firstResult, int maxResults) {
-		return new EntityServiceResult(Entity.findEntityEntries(firstResult, maxResults),Entity.countAccounts(),null);
+	public __ENTITY_SERVICE__Result findEntityEntries(int firstResult, int maxResults) {
+		return new __ENTITY_SERVICE__Result(Entity.findEntityEntries(firstResult, maxResults),Entity.countAccounts(),null);
 	}
 }

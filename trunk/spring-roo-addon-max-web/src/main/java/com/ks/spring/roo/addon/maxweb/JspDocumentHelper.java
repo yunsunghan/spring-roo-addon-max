@@ -138,7 +138,9 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 			col = document.createElement("col");
 			col.setAttribute("width", "10%");
 			if(++colCount < 7) {
-				tableElement.appendChild(col);
+				if(!field.getFieldName().getSymbolName().toLowerCase().equals("version")){
+					tableElement.appendChild(col);
+				}
 			}
 		}
 		col = document.createElement("col"); // manage
@@ -150,18 +152,16 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 		Element trElement = document.createElement("tr");
 		theadElement.appendChild(trElement);
 
-		Element idThElement = document.createElement("th");//no
-		idThElement.setAttribute("class", "first");
-		idThElement.setTextContent("No");
-		trElement.appendChild(idThElement);
-		
 		int fieldCounter = 0;
 		for (FieldMetadata field : fields) {
 			Element thElement = document.createElement("th");
+			if(fieldCounter == 0) thElement.setAttribute("class", "first");
 			thElement.setTextContent(field.getFieldName().getReadableSymbolName());//
 			if(++fieldCounter < 7) {
-				trElement.appendChild(thElement);
-				trElement.appendChild(document.createTextNode("\n\n"));
+				if(!field.getFieldName().getSymbolName().toLowerCase().equals("version")){
+					trElement.appendChild(thElement);
+					trElement.appendChild(document.createTextNode("\n\n"));
+				}
 			}
 		}
 	
@@ -175,15 +175,15 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 		// show,update,delete url ================
 		Element showUrl = document.createElement("spring:url");
 		showUrl.setAttribute("var", "show_url");
-		showUrl.setAttribute("value", "${BACK_CTX}/"+entityName+"/show"); //entityMetadata.getIdentifierField().getFieldName().getSymbolName()
+		showUrl.setAttribute("value", "${BACK_CTX}/"+entityName+"s/show"); //entityMetadata.getIdentifierField().getFieldName().getSymbolName()
 		tbodyElement.appendChild(showUrl);
 		Element updateUrl = document.createElement("spring:url");
 		updateUrl.setAttribute("var", "update_url");
-		updateUrl.setAttribute("value", "${BACK_CTX}/"+entityName+"/update"); //entityMetadata.getIdentifierField().getFieldName().getSymbolName()
+		updateUrl.setAttribute("value", "${BACK_CTX}/"+entityName+"s/update"); //entityMetadata.getIdentifierField().getFieldName().getSymbolName()
 		tbodyElement.appendChild(updateUrl);
 		Element deleteUrl = document.createElement("spring:url");
 		deleteUrl.setAttribute("var", "delete_url");
-		deleteUrl.setAttribute("value", "${BACK_CTX}/"+entityName+"/delete/${"+entityName+".id}"); //entityMetadata.getIdentifierField().getFieldName().getSymbolName()
+		deleteUrl.setAttribute("value", "${BACK_CTX}/"+entityName+"s/delete/${"+entityName+".id}"); //entityMetadata.getIdentifierField().getFieldName().getSymbolName()
 		tbodyElement.appendChild(deleteUrl);
 		
 		//<spring:url var="img" value="/resources/"/>
@@ -199,10 +199,6 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 		Element trElement2 = document.createElement("tr");
 		forEachElement.appendChild(trElement2);
 
-		Element idTdElement = document.createElement("td");
-		idTdElement.setTextContent("${" + entityName + "." + "id" + "}"); //entityMetadata.getIdentifierField().getFieldName().getSymbolName()
-		trElement2.appendChild(idTdElement);
-		
 		fieldCounter = 0;
 		for (FieldMetadata field : fields) {
 			Element tdElement = document.createElement("td");
@@ -218,51 +214,40 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 				tdElement.setTextContent("${fn:substring(" + entityName + "." + field.getFieldName().getSymbolName() + ", 0, 20)}");
 			}
 			if(++fieldCounter < 7) {
-				trElement2.appendChild(tdElement);
+				if(!field.getFieldName().getSymbolName().toLowerCase().equals("version")){
+					trElement2.appendChild(tdElement);
+				}
 			}
 		}
 		//show
-		Element showElement = document.createElement("td");
+		Element rowManage = document.createElement("td");
 		Element showLink = document.createElement("a");
 		showLink.setAttribute("href", "${show_url}/${"+entityName+".id}");
-		Element showImage = document.createElement("img");
-		showImage.setAttribute("src", "${BACK_IMAGE_PATH}/btn_view.gif");
-		showImage.setAttribute("alt", "show page");
-		showLink.appendChild(showImage);
-		showElement.appendChild(showLink);
-		trElement2.appendChild(showElement);
+		showLink.setTextContent("[View]");
+		rowManage.appendChild(showLink);
 		//update
-		Element updateElement = document.createElement("td");		
 		Element updateLink = document.createElement("a");
 		updateLink.setAttribute("href", "${update_url}/${"+entityName+".id}");
-		Element updateImage = document.createElement("img");
-		updateImage.setAttribute("src", "${BACK_IMAGE_PATH}/btn_mod.gif");
-		updateImage.setAttribute("alt", "update page");
-		updateLink.appendChild(updateImage);
-		updateElement.appendChild(updateLink);
-		trElement2.appendChild(updateElement);
+		updateLink.setTextContent("[Modify]");
+		rowManage.appendChild(updateLink);
 		//delete
-		Element deleteElement = document.createElement("td");
 		Element deleteLink = document.createElement("a");
 		deleteLink.setAttribute("href", "${delete_url}/${"+entityName+".id}");
-		Element deleteImage = document.createElement("img");
-		deleteImage.setAttribute("src", "${BACK_IMAGE_PATH}/btn_del.gif");
-		deleteImage.setAttribute("alt", "delete page");
-		deleteLink.appendChild(deleteImage);
-		deleteElement.appendChild(deleteLink);
-		trElement2.appendChild(deleteElement);
+		deleteLink.setTextContent("[Delete]");
+		rowManage.appendChild(deleteLink);
+		trElement2.appendChild(rowManage);
 		
 		Element elseElement = document.createElement("c:if");
-		elseElement.setAttribute("test", "${empty " + entityName + "}");//entityMetadata.getPlural().toLowerCase()
+		elseElement.setAttribute("test", "${empty result}");//entityMetadata.getPlural().toLowerCase()
 		Element colspanTr = document.createElement("tr");
 		Element colspanTd = document.createElement("td");
-		colspanTd.setAttribute("colspan", ""+(fieldCounter+2));
+		colspanTd.setAttribute("colspan", ""+(fieldCounter+1));
 		colspanTd.setTextContent("Not Found for "+entityName+" Data");
 		colspanTr.appendChild(colspanTd);
 		elseElement.appendChild(colspanTr);
+		tbodyElement.appendChild(elseElement);
 		
 		bodyElement.appendChild(ifElement);
-		bodyElement.appendChild(elseElement);
 		document.getDocumentElement().appendChild(bodyElement);
 		
 		//footer -------------------------------------
@@ -285,7 +270,7 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 		document = printCommentMessage(document,"Show Start...");
 		
 		Element ifElement = document.createElement("c:if");
-		ifElement.setAttribute("test", "${not empty " + entityName + "}");
+		ifElement.setAttribute("test", "${not empty result}");
 		bodyElement.appendChild(ifElement);		
 
 		// table header start---------
@@ -331,12 +316,13 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 			} else {
 				td.setTextContent("${" + entityName + "." + field.getFieldName().getSymbolName() + "}");
 			}
-			ifElement.appendChild(trElement);
-			ifElement.appendChild(document.createTextNode("\n\n"));
+			trElement.appendChild(td);
+			tbodyElement.appendChild(trElement);
+			tbodyElement.appendChild(document.createTextNode("\n\n"));
 		}
 
 		Element elseElement = document.createElement("c:if");
-		elseElement.setAttribute("test", "${empty " + entityName + "}");
+		elseElement.setAttribute("test", "${empty result}");
 		elseElement.setTextContent("No " + entity.getSimpleTypeName() + " found with this id.");
 		
 		bodyElement.appendChild(elseElement);
@@ -363,14 +349,14 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 		
 		Element url = document.createElement("c:url");
 		url.setAttribute("var", "form_url");
-		url.setAttribute("value", "/" + entityName + "/create");
+		url.setAttribute("value", "/" + entityName + "s/create");
 		bodyElement.appendChild(url);
 		
 		Element formElement = document.createElement("form:form");
 		formElement.setAttribute("modelAttribute", "result");
 		formElement.setAttribute("action", "${form_url}");
 		formElement.setAttribute("method", "POST");
-
+		//form
 		createFieldsForCreateAndUpdate(document, formElement);
 
 		bodyElement.appendChild(formElement);
@@ -397,14 +383,14 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 		
 		Element url = document.createElement("c:url");
 		url.setAttribute("var", "form_url");
-		url.setAttribute("value", "/" + entityName + "/update/${" + entityName	+ "." + "id" + "}");//entityMetadata.getIdentifierField().getFieldName().getSymbolName()
+		url.setAttribute("value", "/" + entityName + "s/update/${" + entityName	+ "." + "id" + "}");//entityMetadata.getIdentifierField().getFieldName().getSymbolName()
 		bodyElement.appendChild(url);
 		
 		Element formElement = document.createElement("form:form");
-		formElement.setAttribute("modelAttribute", entityName);
+		formElement.setAttribute("modelAttribute", "result");
 		formElement.setAttribute("action", "${form_url}");
 		formElement.setAttribute("method", "POST");		
-
+		//form
 		createFieldsForCreateAndUpdate(document, formElement);
 		
 		Element formHiddenId = document.createElement("form:hidden");
@@ -545,43 +531,71 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 //	}
 	
 	private void createFieldsForCreateAndUpdate(Document document, Element formElement) {
-		
 		String entityName = entity.getSimpleTypeName().toLowerCase();
 		
+		// table header start---------
+		Element tableElement = document.createElement("table");
+		tableElement.setAttribute("summary", "This is Entity Show");
+		tableElement.setAttribute("class", "tbl_view");
+		tableElement.setAttribute("style", "margin-bottom:30px;");
+		formElement.appendChild(tableElement);
+		// caption
+		Element caption = document.createElement("caption");
+		caption.setTextContent("Entity Create");
+		tableElement.appendChild(caption);
+		//col
+		Element col_1 = document.createElement("col"); //no1
+		col_1.setAttribute("width", "10%");
+		tableElement.appendChild(col_1);
+		Element col_2 = document.createElement("col"); //no2
+		col_2.setAttribute("width", "10%");
+		tableElement.appendChild(col_2);
+		Element col_3 = document.createElement("col"); //no3
+		col_3.setAttribute("width", "80%");
+		tableElement.appendChild(col_3);
+
+		Element tbodyElement = document.createElement("tbody");
+		tableElement.appendChild(tbodyElement);
+		
 		for (FieldMetadata field : fields) {
-			JavaType fieldType = field.getFieldType();
-			if(fieldType.isCommonCollectionType() && fieldType.equals(new JavaType(Set.class.getName()))) {
-				if (fieldType.getParameters().size() != 1) {
-					throw new IllegalArgumentException();
+			if(!field.getFieldName().getSymbolName().toLowerCase().equals("version") || 
+					!field.getFieldName().getSymbolName().toLowerCase().equals("id")){
+				JavaType fieldType = field.getFieldType();
+				if(fieldType.isCommonCollectionType() && fieldType.equals(new JavaType(Set.class.getName()))) {
+					if (fieldType.getParameters().size() != 1) {
+						throw new IllegalArgumentException();
+					}
+					fieldType = fieldType.getParameters().get(0);
 				}
-				fieldType = fieldType.getParameters().get(0);
-			}
-			
-			Element trElement = document.createElement("tr");
-			trElement.setAttribute("id", "roo_" + entityName + "_" + field.getFieldName().getSymbolName());
 				
-			Element th = document.createElement("th");
-			th.setAttribute("colspan", "2");
-			th.setTextContent(field.getFieldName().getSymbolName() + ":");
-			trElement.appendChild(th);
-			
-			Element td = document.createElement("td");
-			td.appendChild(JspUtils.getInputBox(document, new JavaSymbolName(field.getFieldName().getSymbolName()), 30));
-			td.appendChild(document.createElement("br"));
-			td.appendChild(JspUtils.getErrorsElement(document, new JavaSymbolName(field.getFieldName().getSymbolName())));
-//			td.appendChild(DojoUtils.getValidationDojo(document, field));
-			trElement.appendChild(td);
-			trElement.appendChild(document.createTextNode("\n\n"));			
-			
-//			if (fieldType.getFullyQualifiedTypeName().equals(Date.class.getName()) ||
-//					// should be tested with instanceof
-//					fieldType.getFullyQualifiedTypeName().equals(Calendar.class.getName())) {
-//				
-//			}
-			
-			formElement.appendChild(trElement);
-			formElement.appendChild(document.createElement("br"));				
+				Element trElement = document.createElement("tr");
+				trElement.setAttribute("id", "roo_" + entityName + "_" + field.getFieldName().getSymbolName());
+					
+				Element th = document.createElement("th");
+				th.setAttribute("colspan", "2");
+				th.setTextContent(field.getFieldName().getSymbolName() + ":");
+				trElement.appendChild(th);
+				
+				Element td = document.createElement("td");
+				td.appendChild(JspUtils.getInputBox(document, new JavaSymbolName(entityName+"."+field.getFieldName().getSymbolName()), 30));
+				td.appendChild(document.createElement("br"));
+				td.appendChild(JspUtils.getErrorsElement(document, new JavaSymbolName(entityName+"."+field.getFieldName().getSymbolName())));
+	//			td.appendChild(DojoUtils.getValidationDojo(document, field));
+				trElement.appendChild(td);
+				trElement.appendChild(document.createTextNode("\n\n"));			
+				
+	//			if (fieldType.getFullyQualifiedTypeName().equals(Date.class.getName()) ||
+	//					// should be tested with instanceof
+	//					fieldType.getFullyQualifiedTypeName().equals(Calendar.class.getName())) {
+	//				
+	//			}
+				
+				tableElement.appendChild(trElement);
+				tableElement.appendChild(document.createElement("br"));		
+			}
 		}
+		
+		formElement.appendChild(tableElement);
 	}
 
 	private Document printCommentMessage(Document document, String message) {
