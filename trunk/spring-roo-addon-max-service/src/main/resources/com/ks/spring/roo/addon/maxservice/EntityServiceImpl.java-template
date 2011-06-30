@@ -30,11 +30,11 @@ public class __ENTITY_SERVICE__Impl implements __ENTITY_SERVICE__ {
 
 	@Override
 	public __ENTITY_SERVICE__Result findById(Long id) {
-		return new __ENTITY_SERVICE__Result(Entity.findAccount(id));
+		return new __ENTITY_SERVICE__Result(Entity.findEntity(id));
 	}
 
 	@Override
 	public __ENTITY_SERVICE__Result findEntityEntries(int firstResult, int maxResults) {
-		return new __ENTITY_SERVICE__Result(Entity.findEntityEntries(firstResult, maxResults),Entity.countAccounts(),null);
+		return new __ENTITY_SERVICE__Result(Entity.findEntityEntries(firstResult, maxResults),Entity.countEntitys(),null);
 	}
 }
