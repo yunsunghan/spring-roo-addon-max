@@ -1,0 +1,16 @@
+package __TOP_LEVEL_PACKAGE__;
+import __ENTITY_LEVEL_PACKAGE__;
+
+public interface __ENTITY_SERVICE__ {
+
+	/**
+	 * under code 
+	 * auto-created by max-service addons
+	 */
+	public __ENTITY_SERVICE__Result save(Entity entity);
+	public __ENTITY_SERVICE__Result update(Entity entity);
+	public void remove(Entity entity);
+	public __ENTITY_SERVICE__Result findById(Long id);
+	public __ENTITY_SERVICE__Result findEntityEntries(int firstResult, int maxResults);
+	
+}
