@@ -15,6 +15,11 @@ public class JspDocumentCommonHelper {
 
 	protected MetadataService metadataService;
 	
+	/**
+	 **********************************************************************
+	 * Page DIV Header, Footer  
+	 ********************************************************************** 
+	 */	
 	protected Element getDivHeader(Document document, Element bodyElement, String entity) {
 		//		<spring:url var="excel_url" value="${BACK_CTX}/__ENTITYS__/excel"/>
 		//		<spring:url var="create_url" value="${BACK_CTX}/__ENTITYS__/create"/>
@@ -76,69 +81,52 @@ public class JspDocumentCommonHelper {
 		bodyElement.appendChild(div2);
 		return bodyElement;
 	}
-
-	protected Element getDivFooterForm(Document document, Element bodyElement, String entity) {
-		//	<div class="btnarea">
-		//		<div class="btn_cen">
-		//			<span class="button bluebtn">
-		//				<a href="#" onclick="checkForm()">등록하기</a>
-		//			</span>
-		//			<span class="button whitebtn">
-		//				<a href="#">다시입력</a>
-		//			</span>
-		//		</div>
+	protected Element getDivHeaderView(Document document, Element bodyElement, String entity) {
+		//		<spring:url var="excel_url" value="${BACK_CTX}/__ENTITYS__"/>
+		Element urlList = document.createElement("spring:url");
+		urlList.setAttribute("var", "list_url");
+		urlList.setAttribute("value", "${BACK_CTX}/"+entity.toLowerCase()+"s");
+		//	<div class="h2box">
+		//		<h2>Entity 관리</h2>
+		//	</div>
 		//
-		//		<div class="btn_rgt02">
+		Element div1 = document.createElement("div");
+		div1.setAttribute("class", "h2box");
+		Element h2 = document.createElement("h2");
+		h2.setTextContent("Entity Management");
+		div1.appendChild(h2);
+		//	<h3>Entity목록</h3>
+		Element h3 = document.createElement("h3");
+		h3.setTextContent("View");
+		//	<div class="btnarea_top">
+		//		<div class="btn_rgt">
 		//			<span class="button whitebtn">
-		//				<a href='<spring:url value="/__ENTITYS__/list"/>'>목록으로</a>
-		//			</span> 
+		//				<a href="${excel_url}">엑셀다운받기</a>
+		//			</span>
+		//			<span class="button bluebtn">
+		//				<a href="${create_url}">Entity등록</a>
+		//			</span>
 		//		</div>
-		//	</div>		
-		
-		Element div = document.createElement("div");
-		div.setAttribute("class", "btnarea");
-		Element div_1 = document.createElement("div");
-		div_1.setAttribute("class", "btn_cen");
-		
-		Element div_2 = document.createElement("div");
-		div_2.setAttribute("class", "btn_rgt02");
+		//	</div>
+		Element div2 = document.createElement("div");
+		div2.setAttribute("class", "btnarea_top");
+		Element div2_1 = document.createElement("div");
+		div2_1.setAttribute("class", "btn_rgt");
 		
 		Element span1 = document.createElement("span");
-		span1.setAttribute("class", "button bluebtn");
+		span1.setAttribute("class", "button whitebtn");
 		Element a1 = document.createElement("a");
-		a1.setAttribute("href", "#");
-		a1.setAttribute("onclick", "checkForm()");
-		a1.setTextContent("Apply");
+		a1.setAttribute("href", "${list_url}");
+		a1.setTextContent("List");
 		span1.appendChild(a1);
 		
-		Element span2 = document.createElement("span");
-		span2.setAttribute("class", "button whitebtn");
-
-		Element a2 = document.createElement("a");
-		a2.setAttribute("href", "#");
-		a2.setTextContent("Reset");
-		span2.appendChild(a2);
+		div2_1.appendChild(span1);
+		div2.appendChild(div2_1);
 		
-		div_1.appendChild(span1);
-		div_1.appendChild(span2);
-
-		Element span3 = document.createElement("span");
-		span3.setAttribute("class", "button whitebtn");
-		Element sp_url = document.createElement("spring:url");
-		sp_url.setAttribute("value", "/" + entity.toLowerCase() + "s");
-		sp_url.setAttribute("var", "list_url");
-		span3.appendChild(sp_url);
-		
-		Element a3 = document.createElement("a");
-		a3.setAttribute("href", "${list_url}");
-		a3.setTextContent("Goto List");
-		span3.appendChild(a3);
-		
-		div_2.appendChild(span3);
-		
-		div.appendChild(div_1);
-		div.appendChild(div_2);
-		bodyElement.appendChild(div);
+		bodyElement.appendChild(urlList);
+		bodyElement.appendChild(div1);
+		bodyElement.appendChild(h3);
+		bodyElement.appendChild(div2);
 		return bodyElement;
 	}
 	protected Element getDivFooter(Document document, Element bodyElement) {
@@ -186,7 +174,106 @@ public class JspDocumentCommonHelper {
 		bodyElement.appendChild(div);
 		return bodyElement;
 	}
+	protected Element getDivFooterForm(Document document, Element bodyElement, String entity) {
+		//	<div class="btnarea">
+		//		<div class="btn_cen">
+		//			<span class="button bluebtn">
+		//				<a href="#" onclick="checkForm()">등록하기</a>
+		//			</span>
+		//		</div>
+		//
+		//		<div class="btn_rgt02">
+		//			<span class="button whitebtn">
+		//				<a href='<spring:url value="/__ENTITYS__/list"/>'>목록으로</a>
+		//			</span> 
+		//		</div>
+		//	</div>		
+		
+		Element div = document.createElement("div");
+		div.setAttribute("class", "btnarea");
+		Element div_1 = document.createElement("div");
+		div_1.setAttribute("class", "btn_cen");
+		
+		Element div_2 = document.createElement("div");
+		div_2.setAttribute("class", "btn_rgt02");
+		
+		Element span1 = document.createElement("span");
+		span1.setAttribute("class", "button bluebtn");
+		Element a1 = document.createElement("a");
+		a1.setAttribute("href", "#");
+		a1.setAttribute("onclick", "checkForm()");
+		a1.setTextContent("Apply");
+		span1.appendChild(a1);
+		
+		div_1.appendChild(span1);
 
+		Element span3 = document.createElement("span");
+		span3.setAttribute("class", "button whitebtn");
+		Element sp_url = document.createElement("spring:url");
+		sp_url.setAttribute("value", "/backoffice/" + entity.toLowerCase() + "s");
+		sp_url.setAttribute("var", "list_url");
+		span3.appendChild(sp_url);
+		
+		Element a3 = document.createElement("a");
+		a3.setAttribute("href", "${list_url}");
+		a3.setTextContent("List");
+		span3.appendChild(a3);
+		
+		div_2.appendChild(span3);
+		
+		div.appendChild(div_1);
+		div.appendChild(div_2);
+		bodyElement.appendChild(div);
+		return bodyElement;
+	}	
+	protected Element getDivFooterView(Document document, Element bodyElement, String entity) {
+		//	<div class="btnarea"> 
+		//      <spring:url var="update_url" value="${BACK_CTX}/accounts/update/${result.account.id}"/>
+		//		<div class="btn_rgt">
+		//			<span class="button whitebtn">
+		//				<a href="${update_url}">수정하기</a>
+		//			</span>
+		//			<span class="button bluebtn">
+		//				<a href="${list_url}">목록보기</a>
+		//			</span>
+		//		</div>
+		//	</div>
+
+		Element div = document.createElement("div");
+		div.setAttribute("class", "btnarea");
+		
+		Element update_url = document.createElement("spring:url");
+		update_url.setAttribute("var", "update_url");
+		update_url.setAttribute("value", "${BACK_CTX}/"+entity+"s/update/${result."+entity+".id}"); //entityMetadata.getIdentifierField().getFieldName().getSymbolName()
+		div.appendChild(update_url);
+		Element div_1 = document.createElement("div");
+		div_1.setAttribute("class", "btn_rgt");
+		
+		Element span1 = document.createElement("span");
+		span1.setAttribute("class", "button bluebtn");
+		Element a1 = document.createElement("a");
+		a1.setAttribute("href", "${update_url}");
+		a1.setTextContent("Update");
+		span1.appendChild(a1);
+		
+		Element span2 = document.createElement("span");
+		span2.setAttribute("class", "button whitebtn");
+		Element a2 = document.createElement("a");
+		a2.setAttribute("href", "${list_url}");
+		a2.setTextContent("List");
+		span2.appendChild(a2);
+
+		div_1.appendChild(span1);
+		div_1.appendChild(span2);
+		div.appendChild(div_1);
+		bodyElement.appendChild(div);
+		return bodyElement;
+	}	
+	/**
+	 **********************************************************************
+	 * Title Header, Footer  
+	 ********************************************************************** 
+	 */
 	protected Document addHeaders(Document document) {		
 		Element head = document.createElement("head");
 
