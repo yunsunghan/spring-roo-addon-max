@@ -36,7 +36,7 @@ public class __ENTITY_CONTROLLER__ {
         }
         uiModel.asMap().clear();
         entityService.save(result.getEntity());
-        return "redirect:/__ENTITYS__/" + encodeUrlPathSegment(result.getEntity().getId().toString(), httpServletRequest);
+        return "redirect:/backoffice/__ENTITYS__/show/" + encodeUrlPathSegment(result.getEntity().getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(value="create", method = RequestMethod.GET)
@@ -56,12 +56,9 @@ public class __ENTITY_CONTROLLER__ {
     public String list(	@RequestParam(value = "page", required = false) Integer page, 
     					@RequestParam(value = "size", required = false) Integer size, 
     					Model uiModel) {
-        if (page != null || size != null) {
-        	int sizeNo = size == null ? 10 : size.intValue();
-            uiModel.addAttribute("result", entityService.findEntityEntries(page == null ? 0 : (page.intValue() - 1) * sizeNo, sizeNo));
-        } else {
-            uiModel.addAttribute("result", entityService.findEntityEntries(0, 10));
-        }
+        if (page == null) page = 1;
+        if (size == null) size = 10;
+        uiModel.addAttribute("result", entityService.findEntityEntries((page.intValue() - 1) * size, size));
         return "backoffice/__ENTITYS__/list";
     }
     
@@ -73,7 +70,7 @@ public class __ENTITY_CONTROLLER__ {
         }
         uiModel.asMap().clear();
         entityService.update(result.getEntity());
-        return "redirect:/__ENTITYS__/" + encodeUrlPathSegment(result.getEntity().getId().toString(), httpServletRequest);
+        return "redirect:/backoffice/__ENTITYS__/show/" + encodeUrlPathSegment(result.getEntity().getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(value = "update/{id}", method = RequestMethod.GET)
@@ -86,9 +83,9 @@ public class __ENTITY_CONTROLLER__ {
     public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
     	entityService.findById(id).getEntity().remove();
         uiModel.asMap().clear();
-        uiModel.addAttribute("page", (page == null) ? "0" : page.toString());
+        uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
-        return "redirect:/__ENTITYS__";
+        return "redirect:/backoffice/__ENTITYS__";
     }
 
     String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
