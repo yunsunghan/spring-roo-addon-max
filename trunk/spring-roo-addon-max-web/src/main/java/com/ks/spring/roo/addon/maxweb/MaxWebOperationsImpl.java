@@ -54,6 +54,7 @@ import org.springframework.roo.support.util.FileCopyUtils;
 import org.springframework.roo.support.util.StringUtils;
 import org.springframework.roo.support.util.TemplateUtils;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.ks.spring.roo.addon.maxweb.support.XmlUtils;
 
@@ -129,7 +130,6 @@ public class MaxWebOperationsImpl implements MaxWebOperations {
 			File file = new File(destinationDirectory);
 			Assert.isTrue(file.isDirectory(), destinationDirectory + " is a file, when a directory was expected");
 		}
-		
 //		if (webScaffoldMetadata.getAnnotationValues().isList()) {
 			// By now we have a directory to put the JSPs inside
 			String listPath1 = destinationDirectory + "/list.jsp";
@@ -138,6 +138,10 @@ public class MaxWebOperationsImpl implements MaxWebOperations {
 //		if (webScaffoldMetadata.getAnnotationValues().isShow()) {
 			String showPath = destinationDirectory + "/show.jsp";
 			writeToDiskIfNecessary(showPath, helper.getShowDocument());
+//		}
+//		if (webScaffoldMetadata.getAnnotationValues().isUpdate()) {
+			String listPath3 = destinationDirectory + "/update.jsp";
+			writeToDiskIfNecessary(listPath3, helper.getUpdateDocument());
 //		}
 //		if (webScaffoldMetadata.getAnnotationValues().isCreate()) {
 			String listPath = destinationDirectory + "/create.jsp";
@@ -149,12 +153,43 @@ public class MaxWebOperationsImpl implements MaxWebOperations {
 //					"web_mvc_jsp_create_" + beanInfoMetadata.getJavaBean().getSimpleTypeName().toLowerCase() + "_menu_item", 
 //					"Create new " + beanInfoMetadata.getJavaBean().getSimpleTypeName(),
 //					"/" + beanInfoMetadata.getJavaBean().getSimpleTypeName().toLowerCase() + "/form");
+			
+			// menu.xml ============================================
+			
+			//		<li<c:if test="${menuType eq 'badwords' or menuType eq 'comments' }"> class="fir on"</c:if>><a href="<spring:url value="/backoffice/comments"/>">응원글 관리</a>
+			//			<ul>
+			//				<li class="fir"><a href="<spring:url value="/backoffice/comments"/>">응원글 목록</a></li>
+			//				<li><a href="<spring:url value="/backoffice/badwords"/>">금칙어 관리</a></li>
+			//			</ul>
+			//		</li>
+			String menuFile = pathResolver.getIdentifier(Path.SRC_MAIN_WEBAPP, "WEB-INF/layouts/backoffice_menu.jsp");
+			MutableFile mutableMenuFile = null;
+			try {
+				String entityName = entity.getSimpleTypeName();
+				if (fileManager.exists(menuFile)) {
+					mutableMenuFile = fileManager.updateFile(menuFile);
+					String originalData = convertStreamToString(mutableMenuFile.getInputStream());
+					BufferedWriter out = new BufferedWriter(new OutputStreamWriter(mutableMenuFile.getOutputStream()));
+					out.write(originalData);
+					out.write("\n");
+					out.write("<li<c:if test=\"${menuType eq '"+entityName.toLowerCase()+"'}\"> class=\"fir on\"</c:if>><a href=\"<spring:url value=\"/backoffice/"+entityName.toLowerCase()+"s\"/>\">"+entityName+" Page</a>\n");
+					out.write("	<ul>\n");
+					out.write("		<li class=\"fir\"><a href=\"<spring:url value=\"/backoffice/"+entityName.toLowerCase()+"s\"/>\">"+entityName+" List</a></li>\n");
+					out.write("		<li><a href=\"<spring:url value=\"/backoffice/"+entityName.toLowerCase()+"s/create\"/>\">"+entityName+" Create</a></li>\n");
+					out.write("	</ul>\n");
+					out.write("</li>\n");
+					out.close();
+
+				} else {
+					throw new IllegalStateException("Could not acquire " + menuFile);
+				}
+			} catch (Exception e) {
+				System.out.println("---> " + e.getMessage());
+				throw new IllegalStateException(e);
+			}
+			
 //		} else {
 //			menuOperations.cleanUpMenuItem("web_mvc_jsp_" + beanInfoMetadata.getJavaBean().getSimpleTypeName().toLowerCase() + "_category", "web_mvc_jsp_create_" + beanInfoMetadata.getJavaBean().getSimpleTypeName().toLowerCase() + "_menu_item");
-//		}
-//		if (webScaffoldMetadata.getAnnotationValues().isUpdate()) {
-			String listPath3 = destinationDirectory + "/update.jsp";
-			writeToDiskIfNecessary(listPath3, helper.getUpdateDocument());
 //		}
 		
 		////////////////////////////////////////////////////////////////////////////////////

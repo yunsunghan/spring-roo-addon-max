@@ -12,9 +12,12 @@ import javax.xml.parsers.DocumentBuilder;
 
 import org.springframework.roo.addon.entity.EntityMetadata;
 import org.springframework.roo.classpath.details.FieldMetadata;
+import org.springframework.roo.classpath.details.annotations.AnnotationAttributeValue;
+import org.springframework.roo.classpath.details.annotations.AnnotationMetadata;
 import org.springframework.roo.metadata.MetadataService;
 import org.springframework.roo.model.JavaSymbolName;
 import org.springframework.roo.model.JavaType;
+import org.springframework.roo.project.Path;
 import org.springframework.roo.support.util.Assert;
 import org.springframework.roo.support.util.XmlUtils;
 import org.w3c.dom.Document;
@@ -95,13 +98,11 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 //	public Document getFinderDocument(String finderName) {
 //		DocumentBuilder builder = XmlUtils.getDocumentBuilder();
 //		Document document = builder.newDocument();		
-//		
-//	document.appendChild(document.createAttribute("div"));
+//		document.appendChild(document.createAttribute("div"));
 //		document.appendChild(document.createElement("div"));		
 //		document = addHeaders(document);		
 //		document = getFinderContent(document, finderName);		
 //		document = addFooter(document);
-//		
 //		return document;
 //	}
 	/**
@@ -266,7 +267,7 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 		Element bodyElement = document.createElement("body");
 		
 		//header -------------------------------------
-		bodyElement = getDivHeader(document, bodyElement, entity.getSimpleTypeName());
+		bodyElement = getDivHeaderView(document, bodyElement, entity.getSimpleTypeName());
 		document = printCommentMessage(document,"Show Start...");
 		
 		Element ifElement = document.createElement("c:if");
@@ -298,27 +299,30 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 		tableElement.appendChild(tbodyElement);
 		
 		for (FieldMetadata field : fields) {
-			Element trElement = document.createElement("tr");
-			trElement.setAttribute("id", "roo_" + entityName + "_" + field.getFieldName().getSymbolName());
+			if(!field.getFieldName().getSymbolName().toLowerCase().equals("version") ||
+					!field.getFieldName().getSymbolName().toLowerCase().equals("id")){
+				Element trElement = document.createElement("tr");
+				trElement.setAttribute("id", "roo_" + entityName + "_" + field.getFieldName().getSymbolName());
+					
+				Element th = document.createElement("th");
+				th.setAttribute("colspan", "2");
+				th.setTextContent(field.getFieldName().getSymbolName() + ":");
+				trElement.appendChild(th);
 				
-			Element th = document.createElement("th");
-			th.setAttribute("colspan", "2");
-			th.setTextContent(field.getFieldName().getSymbolName() + ":");
-			trElement.appendChild(th);
-			
-			Element td = document.createElement("td");
-			if (field.equals(new JavaType(Date.class.getName()))) {
-				Element fmt = document.createElement("fmt:formatDate");
-				fmt.setAttribute("value", "${" + entityName + "." + field.getFieldName().getSymbolName() + "}");
-				fmt.setAttribute("type", "DATE");
-				fmt.setAttribute("pattern", dateFormatLocalized.toPattern());
-				td.appendChild(fmt);
-			} else {
-				td.setTextContent("${" + entityName + "." + field.getFieldName().getSymbolName() + "}");
+				Element td = document.createElement("td");
+				if (field.equals(new JavaType(Date.class.getName()))) {
+					Element fmt = document.createElement("fmt:formatDate");
+					fmt.setAttribute("value", "${result." + entityName + "." + field.getFieldName().getSymbolName() + "}");
+					fmt.setAttribute("type", "DATE");
+					fmt.setAttribute("pattern", dateFormatLocalized.toPattern());
+					td.appendChild(fmt);
+				} else {
+					td.setTextContent("${result." + entityName + "." + field.getFieldName().getSymbolName() + "}");
+				}
+				trElement.appendChild(td);
+				tbodyElement.appendChild(trElement);
+				tbodyElement.appendChild(document.createTextNode("\n\n"));
 			}
-			trElement.appendChild(td);
-			tbodyElement.appendChild(trElement);
-			tbodyElement.appendChild(document.createTextNode("\n\n"));
 		}
 
 		Element elseElement = document.createElement("c:if");
@@ -330,7 +334,7 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 		
 		//footer -------------------------------------
 		document = printCommentMessage(document,"Show End...");
-		bodyElement = getDivFooter(document, bodyElement);
+		bodyElement = getDivFooterView(document, bodyElement, entityName);
 		return document;
 	}
 	/**
@@ -344,18 +348,20 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 		Element bodyElement = document.createElement("body");
 		
 		//header -------------------------------------
-		bodyElement = getDivHeader(document, bodyElement, entity.getSimpleTypeName());
+		bodyElement = getDivHeaderView(document, bodyElement, entity.getSimpleTypeName());
 		document = printCommentMessage(document,"Create Start...");
 		
 		Element url = document.createElement("c:url");
 		url.setAttribute("var", "form_url");
-		url.setAttribute("value", "/" + entityName + "s/create");
+		url.setAttribute("value", "/backoffice/" + entityName + "s/create");
 		bodyElement.appendChild(url);
 		
 		Element formElement = document.createElement("form:form");
 		formElement.setAttribute("modelAttribute", "result");
 		formElement.setAttribute("action", "${form_url}");
 		formElement.setAttribute("method", "POST");
+		formElement.setAttribute("id", "action_form");
+		formElement.setAttribute("onsubmit", "return false;");
 		//form
 		createFieldsForCreateAndUpdate(document, formElement);
 
@@ -378,18 +384,20 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 		Element bodyElement = document.createElement("body");
 		
 		//header -------------------------------------
-		bodyElement = getDivHeader(document, bodyElement, entity.getSimpleTypeName());
+		bodyElement = getDivHeaderView(document, bodyElement, entity.getSimpleTypeName());
 		document = printCommentMessage(document,"Update Start...");
 		
 		Element url = document.createElement("c:url");
 		url.setAttribute("var", "form_url");
-		url.setAttribute("value", "/" + entityName + "s/update/${" + entityName	+ "." + "id" + "}");//entityMetadata.getIdentifierField().getFieldName().getSymbolName()
+		url.setAttribute("value", "/backoffice/" + entityName + "s/update");//entityMetadata.getIdentifierField().getFieldName().getSymbolName()
 		bodyElement.appendChild(url);
 		
 		Element formElement = document.createElement("form:form");
 		formElement.setAttribute("modelAttribute", "result");
 		formElement.setAttribute("action", "${form_url}");
 		formElement.setAttribute("method", "POST");		
+		formElement.setAttribute("id", "action_form");		
+		formElement.setAttribute("onsubmit", "return false;");		
 		//form
 		createFieldsForCreateAndUpdate(document, formElement);
 		
@@ -556,10 +564,13 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 
 		Element tbodyElement = document.createElement("tbody");
 		tableElement.appendChild(tbodyElement);
-		
 		for (FieldMetadata field : fields) {
-			if(!field.getFieldName().getSymbolName().toLowerCase().equals("version") || 
-					!field.getFieldName().getSymbolName().toLowerCase().equals("id")){
+			tbodyElement.appendChild(document.createComment("fields : " + field.getFieldName().getSymbolName().toLowerCase())); // log
+			//version,id는 제외
+			if(field.getFieldName().getSymbolName().toLowerCase().equals("version") || field.getFieldName().getSymbolName().toLowerCase().equals("id")){
+				tbodyElement.appendChild(document.createComment("skip : " + field.getFieldName().getSymbolName()));
+			}else{
+				
 				JavaType fieldType = field.getFieldType();
 				if(fieldType.isCommonCollectionType() && fieldType.equals(new JavaType(Set.class.getName()))) {
 					if (fieldType.getParameters().size() != 1) {
@@ -570,28 +581,84 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 				
 				Element trElement = document.createElement("tr");
 				trElement.setAttribute("id", "roo_" + entityName + "_" + field.getFieldName().getSymbolName());
-					
 				Element th = document.createElement("th");
 				th.setAttribute("colspan", "2");
 				th.setTextContent(field.getFieldName().getSymbolName() + ":");
 				trElement.appendChild(th);
-				
 				Element td = document.createElement("td");
-				td.appendChild(JspUtils.getInputBox(document, new JavaSymbolName(entityName+"."+field.getFieldName().getSymbolName()), 30));
+				
+				if (fieldType.getFullyQualifiedTypeName().equals(Boolean.class.getName())
+						|| fieldType.getFullyQualifiedTypeName().equals(boolean.class.getName())) {
+					td.appendChild(JspUtils.getCheckBox(document, new JavaSymbolName(entityName+"."+field.getFieldName().getSymbolName())));					
+				}else{
+					boolean specialAnnotation = false;
+					for (AnnotationMetadata annotation : field.getAnnotations()) {
+						if (annotation.getAnnotationType().getFullyQualifiedTypeName().equals("javax.persistence.ManyToOne")
+								|| annotation.getAnnotationType().getFullyQualifiedTypeName().equals("javax.persistence.OneToMany")) {
+
+							EntityMetadata typeEntityMetadata = null;
+							
+							if (field.getFieldType().isCommonCollectionType()) {
+								typeEntityMetadata = (EntityMetadata) metadataService.get(EntityMetadata.createIdentifier(field.getFieldType().getParameters().get(0), Path.SRC_MAIN_JAVA));
+							} else {
+								typeEntityMetadata = (EntityMetadata) metadataService.get(EntityMetadata.createIdentifier(field.getFieldType(), Path.SRC_MAIN_JAVA));
+							}
+		
+							if(typeEntityMetadata == null) {
+								throw new IllegalStateException("Could not determine the plural name for the " + field.getFieldName().getSymbolNameCapitalisedFirstLetter() + " field");
+							}
+							String plural = typeEntityMetadata.getPlural().toLowerCase();
+							
+							Element ifElement = document.createElement("c:if");
+							ifElement.setAttribute("test", "${not empty " + plural + "}");
+							td.appendChild(ifElement);
+							
+//							td.removeChild(labelElement);
+//							ifElement.appendChild(labelElement);
+							ifElement.appendChild(JspUtils.getSelectBox(document, field.getFieldName(), plural));		
+
+							specialAnnotation = true;
+							
+							if(annotation.getAnnotationType().getFullyQualifiedTypeName().equals("javax.persistence.ManyToOne")) {
+								ifElement.setTextContent( field.getFieldName() + "is ManyToOne :)");
+							} else {
+								ifElement.setTextContent( field.getFieldName() + "is Many :)");
+							}
+						} else if (annotation.getAnnotationType().getFullyQualifiedTypeName().equals("javax.validation.constraints.Size")) {
+							AnnotationAttributeValue<?> max = annotation.getAttribute(new JavaSymbolName("max"));
+							if(max != null) {
+								int maxValue = (Integer)max.getValue();
+								if(maxValue > 30) {		
+									td.appendChild(JspUtils.getTextArea(document, new JavaSymbolName(entityName+"."+field.getFieldName().getSymbolName()), maxValue));
+								} else {
+									td.appendChild(JspUtils.getInputBox(document, new JavaSymbolName(entityName+"."+field.getFieldName().getSymbolName()), maxValue));
+								}							
+								specialAnnotation = true;
+							}
+						} else if (isEnumType(field.getFieldType())) {
+							td.appendChild(JspUtils.getEnumSelectBox(document, new JavaSymbolName(entityName+"."+field.getFieldName().getSymbolName())));		
+							specialAnnotation = true;
+						}
+					}
+					if (!specialAnnotation) {
+						td.appendChild(JspUtils.getInputBox(document, new JavaSymbolName(entityName+"."+field.getFieldName().getSymbolName()), 30));
+						
+						if (fieldType.getFullyQualifiedTypeName().equals(Date.class.getName()) ||
+								// should be tested with instanceof
+										fieldType.getFullyQualifiedTypeName().equals(Calendar.class.getName())) {
+							td.setTextContent("Calendar on");
+						}
+					}					
+				}
+				////////////////////////////////////////////////////////////////////
 				td.appendChild(document.createElement("br"));
-				td.appendChild(JspUtils.getErrorsElement(document, new JavaSymbolName(entityName+"."+field.getFieldName().getSymbolName())));
-	//			td.appendChild(DojoUtils.getValidationDojo(document, field));
+				td.appendChild(JspUtils.getErrorsElement(document, new JavaSymbolName(entityName+"."+field.getFieldName().getSymbolName())));					
+
 				trElement.appendChild(td);
 				trElement.appendChild(document.createTextNode("\n\n"));			
 				
-	//			if (fieldType.getFullyQualifiedTypeName().equals(Date.class.getName()) ||
-	//					// should be tested with instanceof
-	//					fieldType.getFullyQualifiedTypeName().equals(Calendar.class.getName())) {
-	//				
-	//			}
 				
-				tableElement.appendChild(trElement);
-				tableElement.appendChild(document.createElement("br"));		
+				tbodyElement.appendChild(trElement);
 			}
 		}
 		
