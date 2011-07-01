@@ -13,3 +13,4 @@ spring-roo-addon-max 설치에 대해서 설명한다.
 = uninstall =
  *  > osgi uninstall --bundleSymbolicName com.ks.spring.roo.addon.maxservice
  *  > osgi uninstall --bundleSymbolicName com.ks.spring.roo.addon.maxweb
+ *  > osgi uninstall --bundleSymbolicName com.ks.spring.roo.addon.maxsetup
