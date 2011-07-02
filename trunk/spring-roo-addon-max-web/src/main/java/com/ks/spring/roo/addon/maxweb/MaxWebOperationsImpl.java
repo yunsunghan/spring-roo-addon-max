@@ -341,10 +341,20 @@ public class MaxWebOperationsImpl implements MaxWebOperations {
 				if (fqEntityName == null) {
 					throw new IllegalArgumentException("Cannot locate source for '" + serviceClazz.getFullyQualifiedTypeName() + "'");
 				}
+
+				if(entityStringA.endsWith("s")){
+					input = input.replace("countEntitys", "count" + entityStringA + "es");
+					input = input.replace("findAllEntitys", "findAll" + entityStringA + "es");
+				}else{
+					input = input.replace("countEntitys", "count" + entityStringA + "s");
+					input = input.replace("findAllEntitys", "findAll" + entityStringA + "s");
+				}
+				
 				input = input.replace("Entity", entityStringA);
 				input = input.replace("entity", entityStringa);
 				input = input.replace("__ENTITYS__", entityStrings);
-				input = input.replace("__ENTITY_LEVEL_PACKAGE__", serviceClazz.getFullyQualifiedTypeName());
+				input = input.replace("__ENTITY_LEVEL_PACKAGE__", entity.getFullyQualifiedTypeName());
+				input = input.replace("__ENTITY_SERVICE_LEVEL_PACKAGE__", serviceClazz.getFullyQualifiedTypeName());
 				input = input.replace("__ENTITY_CONTROLLER__", webClazz.getSimpleTypeName());
 				// Output the file for the user
 				mutableFile = fileManager.createFile(path);

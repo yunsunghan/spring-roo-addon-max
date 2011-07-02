@@ -6,9 +6,10 @@ public interface __ENTITY_SERVICE__ {
 	/**
 	 * under code 
 	 * auto-created by max-service addons
+	 * 정책 : save,update는 Entity를, find*는 DTO를...
 	 */
-	public __ENTITY_SERVICE__Result save(Entity entity);
-	public __ENTITY_SERVICE__Result update(Entity entity);
+	public Entity save(Entity entity);
+	public Entity update(Entity entity);
 	public void remove(Entity entity);
 	public __ENTITY_SERVICE__Result findById(Long id);
 	public __ENTITY_SERVICE__Result findEntityEntries(int firstResult, int maxResults);

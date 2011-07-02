@@ -4,7 +4,7 @@
   <groupId>com.ks.spring.roo.addon.maxservice</groupId>
   <artifactId>com.ks.spring.roo.addon.maxservice</artifactId>
   <packaging>bundle</packaging>
-  <version>0.1.0.M1</version>
+  <version>1.0.0.M2</version>
   <name>spring-roo-addon-max-service</name>
   <organization>
     <name>Your project/company name goes here (used in copyright and vendor information in the manifest)</name>

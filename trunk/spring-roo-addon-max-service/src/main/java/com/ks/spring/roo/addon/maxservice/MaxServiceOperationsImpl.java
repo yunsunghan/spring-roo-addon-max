@@ -120,11 +120,16 @@ public class MaxServiceOperationsImpl implements MaxServiceOperations {
 						throw new IllegalArgumentException("Cannot locate source for '" + entityClazz.getFullyQualifiedTypeName() + "'");
 					}
 					String entityName = fqEntityName.substring(fqEntityName.lastIndexOf(".") + 1);
+
 					if(entityName.endsWith("s")){
-						input = input.replace("Entity", entityName+"e");
+						input = input.replace("countEntitys", "count" + entityName + "es");
+						input = input.replace("findAllEntitys", "findAll" + entityName + "es");
 					}else{
-						input = input.replace("Entity", entityName);
+						input = input.replace("countEntitys", "count" + entityName + "s");
+						input = input.replace("findAllEntitys", "findAll" + entityName + "s");
 					}
+					
+					input = input.replace("Entity", entityName);
 					input = input.replace("entity", entityName.toLowerCase());
 					input = input.replace("__ENTITY_LEVEL_PACKAGE__", entityClazz.getFullyQualifiedTypeName());
 					input = input.replace("__ENTITY_SERVICE__", serviceClazz.getSimpleTypeName());

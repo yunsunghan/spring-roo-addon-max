@@ -12,15 +12,15 @@ public class __ENTITY_SERVICE__Impl implements __ENTITY_SERVICE__ {
 	 * auto-created by max-service addons
 	 */
 	@Override
-	public __ENTITY_SERVICE__Result save(Entity entity) {
+	public Entity save(Entity entity) {
 		entity.persist();
-		return new __ENTITY_SERVICE__Result(entity);
+		return entity;
 	}
 		
 	@Override
-	public __ENTITY_SERVICE__Result update(Entity entity) {
+	public Entity update(Entity entity) {
 		entity.merge();
-		return new __ENTITY_SERVICE__Result(entity);
+		return entity;
 	}	
 
 	@Override

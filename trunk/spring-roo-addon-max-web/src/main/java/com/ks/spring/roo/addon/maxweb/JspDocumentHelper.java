@@ -357,7 +357,7 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 		bodyElement.appendChild(url);
 		
 		Element formElement = document.createElement("form:form");
-		formElement.setAttribute("modelAttribute", "result");
+		formElement.setAttribute("modelAttribute", entityName);
 		formElement.setAttribute("action", "${form_url}");
 		formElement.setAttribute("method", "POST");
 		formElement.setAttribute("id", "action_form");
@@ -393,7 +393,7 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 		bodyElement.appendChild(url);
 		
 		Element formElement = document.createElement("form:form");
-		formElement.setAttribute("modelAttribute", "result");
+		formElement.setAttribute("modelAttribute", entityName);
 		formElement.setAttribute("action", "${form_url}");
 		formElement.setAttribute("method", "POST");		
 		formElement.setAttribute("id", "action_form");		
@@ -402,12 +402,12 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 		createFieldsForCreateAndUpdate(document, formElement);
 		
 		Element formHiddenId = document.createElement("form:hidden");
-		formHiddenId.setAttribute("path", entityName+".id");//entityMetadata.getIdentifierField().getFieldName().getSymbolName()
-		formHiddenId.setAttribute("id", "_" + "id");//entityMetadata.getIdentifierField().getFieldName().getSymbolName()
+		formHiddenId.setAttribute("path", "id");//entityMetadata.getIdentifierField().getFieldName().getSymbolName()
+		formHiddenId.setAttribute("id", "_id");//entityMetadata.getIdentifierField().getFieldName().getSymbolName()
 		formElement.appendChild(formHiddenId);
 		Element formHiddenVersion = document.createElement("form:hidden");
-		formHiddenVersion.setAttribute("path", entityName+".version");//entityMetadata.getIdentifierField().getFieldName().getSymbolName()
-		formHiddenVersion.setAttribute("id", "_" + "version");//entityMetadata.getIdentifierField().getFieldName().getSymbolName()
+		formHiddenVersion.setAttribute("path", "version");//entityMetadata.getIdentifierField().getFieldName().getSymbolName()
+		formHiddenVersion.setAttribute("id", "_version");//entityMetadata.getIdentifierField().getFieldName().getSymbolName()
 		formElement.appendChild(formHiddenVersion);
 
 		bodyElement.appendChild(formElement);
@@ -580,7 +580,7 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 				}
 				
 				Element trElement = document.createElement("tr");
-				trElement.setAttribute("id", "roo_" + entityName + "_" + field.getFieldName().getSymbolName());
+				trElement.setAttribute("id", "roo_" + field.getFieldName().getSymbolName());
 				Element th = document.createElement("th");
 				th.setAttribute("colspan", "2");
 				th.setTextContent(field.getFieldName().getSymbolName() + ":");
@@ -589,7 +589,7 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 				
 				if (fieldType.getFullyQualifiedTypeName().equals(Boolean.class.getName())
 						|| fieldType.getFullyQualifiedTypeName().equals(boolean.class.getName())) {
-					td.appendChild(JspUtils.getCheckBox(document, new JavaSymbolName(entityName+"."+field.getFieldName().getSymbolName())));					
+					td.appendChild(JspUtils.getCheckBox(document, new JavaSymbolName(field.getFieldName().getSymbolName())));					
 				}else{
 					boolean specialAnnotation = false;
 					for (AnnotationMetadata annotation : field.getAnnotations()) {
@@ -629,39 +629,48 @@ public class JspDocumentHelper extends JspDocumentCommonHelper {
 							if(max != null) {
 								int maxValue = (Integer)max.getValue();
 								if(maxValue > 30) {		
-									td.appendChild(JspUtils.getTextArea(document, new JavaSymbolName(entityName+"."+field.getFieldName().getSymbolName()), maxValue));
+									td.appendChild(JspUtils.getTextArea(document, new JavaSymbolName(field.getFieldName().getSymbolName()), maxValue));
 								} else {
-									td.appendChild(JspUtils.getInputBox(document, new JavaSymbolName(entityName+"."+field.getFieldName().getSymbolName()), maxValue));
+									td.appendChild(JspUtils.getInputBox(document, new JavaSymbolName(field.getFieldName().getSymbolName()), maxValue));
 								}							
 								specialAnnotation = true;
 							}
 						} else if (isEnumType(field.getFieldType())) {
-							td.appendChild(JspUtils.getEnumSelectBox(document, new JavaSymbolName(entityName+"."+field.getFieldName().getSymbolName())));		
+							td.appendChild(JspUtils.getEnumSelectBox(document, new JavaSymbolName(field.getFieldName().getSymbolName())));		
 							specialAnnotation = true;
 						}
 					}
 					if (!specialAnnotation) {
-						td.appendChild(JspUtils.getInputBox(document, new JavaSymbolName(entityName+"."+field.getFieldName().getSymbolName()), 30));
+						td.appendChild(JspUtils.getInputBox(document, new JavaSymbolName(field.getFieldName().getSymbolName()), 30));
 						
 						if (fieldType.getFullyQualifiedTypeName().equals(Date.class.getName()) ||
 								// should be tested with instanceof
 										fieldType.getFullyQualifiedTypeName().equals(Calendar.class.getName())) {
-							td.setTextContent("Calendar on");
+							
+							Element aLink = document.createElement("a");
+							aLink.setAttribute("href", "#");
+							aLink.setAttribute("onclick", "showCal(this)");
+							
+							Element img = document.createElement("img");
+							img.setAttribute("src", "${BACK_IMAGE_PATH}/icon_calendar.gif");
+							img.setAttribute("alt", "Show Calendar");
+							
+							aLink.appendChild(img);
+							td.appendChild(aLink);
 						}
 					}					
 				}
 				////////////////////////////////////////////////////////////////////
 				td.appendChild(document.createElement("br"));
-				td.appendChild(JspUtils.getErrorsElement(document, new JavaSymbolName(entityName+"."+field.getFieldName().getSymbolName())));					
+				Element errorsElement = JspUtils.getErrorsElement(document, new JavaSymbolName(field.getFieldName().getSymbolName()));
+				errorsElement.setAttribute("cssClass", "errors");
+				td.appendChild(errorsElement);					
 
 				trElement.appendChild(td);
 				trElement.appendChild(document.createTextNode("\n\n"));			
-				
-				
 				tbodyElement.appendChild(trElement);
 			}
 		}
-		
 		formElement.appendChild(tableElement);
 	}
 

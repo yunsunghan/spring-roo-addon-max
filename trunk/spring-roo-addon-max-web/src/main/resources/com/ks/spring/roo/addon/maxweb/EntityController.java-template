@@ -6,7 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import __ENTITY_LEVEL_PACKAGE__;
-import __ENTITY_LEVEL_PACKAGE__Result;
+import __ENTITY_SERVICE_LEVEL_PACKAGE__;
+import __ENTITY_SERVICE_LEVEL_PACKAGE__Result;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,19 +30,19 @@ public class __ENTITY_CONTROLLER__ {
 	@Autowired EntityService entityService;
 	
     @RequestMapping(value="create", method = RequestMethod.POST)
-    public String create(@Valid EntityServiceResult result, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+    public String create(@Valid Entity entity, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
-            uiModel.addAttribute("result", result);
+            uiModel.addAttribute("entity", entity);
             return "backoffice/__ENTITYS__/create";
         }
         uiModel.asMap().clear();
-        entityService.save(result.getEntity());
-        return "redirect:/backoffice/__ENTITYS__/show/" + encodeUrlPathSegment(result.getEntity().getId().toString(), httpServletRequest);
+        entityService.save(entity);
+        return "redirect:/backoffice/__ENTITYS__/show/" + encodeUrlPathSegment(entity.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(value="create", method = RequestMethod.GET)
     public String createForm(Model uiModel) {
-        uiModel.addAttribute("result", new EntityServiceResult());
+        uiModel.addAttribute("entity", new Entity());
         return "backoffice/__ENTITYS__/create";
     }
     
@@ -63,19 +64,19 @@ public class __ENTITY_CONTROLLER__ {
     }
     
     @RequestMapping(value="update", method = RequestMethod.POST)
-    public String update(@Valid EntityServiceResult result, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+    public String update(@Valid Entity entity, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
-            uiModel.addAttribute("result", result);
+            uiModel.addAttribute("entity", entity);
             return "backoffice/__ENTITYS__/update";
         }
         uiModel.asMap().clear();
-        entityService.update(result.getEntity());
-        return "redirect:/backoffice/__ENTITYS__/show/" + encodeUrlPathSegment(result.getEntity().getId().toString(), httpServletRequest);
+        entityService.update(entity);
+        return "redirect:/backoffice/__ENTITYS__/show/" + encodeUrlPathSegment(entity.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(value = "update/{id}", method = RequestMethod.GET)
     public String updateForm(@PathVariable("id") Long id, Model uiModel) {
-        uiModel.addAttribute("result", entityService.findById(id));
+        uiModel.addAttribute("entity", entityService.findById(id).getEntity());
         return "backoffice/__ENTITYS__/update";
     }
     
