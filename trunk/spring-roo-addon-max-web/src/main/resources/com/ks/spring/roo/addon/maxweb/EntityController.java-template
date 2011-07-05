@@ -54,12 +54,11 @@ public class __ENTITY_CONTROLLER__ {
     }
     
     @RequestMapping(method = RequestMethod.GET)
-    public String list(	@RequestParam(value = "page", required = false) Integer page, 
-    					@RequestParam(value = "size", required = false) Integer size, 
+    public String list(	
+						@RequestParam(value = "currentPage", required = false, defaultValue="1") Integer currentPage,
+						@RequestParam(value = "startNumber", required = false, defaultValue="0") Integer startNumber,					 
     					Model uiModel) {
-        if (page == null) page = 1;
-        if (size == null) size = 10;
-        uiModel.addAttribute("result", entityService.findEntityEntries((page.intValue() - 1) * size, size));
+        uiModel.addAttribute("result", entityService.findEntityEntries(currentPage, startNumber));
         return "backoffice/__ENTITYS__/list";
     }
     
@@ -81,11 +80,15 @@ public class __ENTITY_CONTROLLER__ {
     }
     
     @RequestMapping(value = "delete/{id}", method = RequestMethod.GET)
-    public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    public String delete(
+    		@PathVariable("id") Long id, 
+			@RequestParam(value = "currentPage", required = false, defaultValue="1") Integer currentPage,
+			@RequestParam(value = "startNumber", required = false, defaultValue="0") Integer startNumber,	 
+    		Model uiModel) {
     	entityService.findById(id).getEntity().remove();
         uiModel.asMap().clear();
-        uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
-        uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
+        uiModel.addAttribute("currentPage", currentPage);
+        uiModel.addAttribute("startNumber", startNumber);
         return "redirect:/backoffice/__ENTITYS__";
     }
 

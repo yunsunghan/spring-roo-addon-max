@@ -12,6 +12,6 @@ public interface __ENTITY_SERVICE__ {
 	public Entity update(Entity entity);
 	public void remove(Entity entity);
 	public __ENTITY_SERVICE__Result findById(Long id);
-	public __ENTITY_SERVICE__Result findEntityEntries(int firstResult, int maxResults);
+	public __ENTITY_SERVICE__Result findEntityEntries(int currentPage, int startNumber);
 	
 }

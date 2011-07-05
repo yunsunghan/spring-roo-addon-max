@@ -98,6 +98,8 @@ public class MaxServiceOperationsImpl implements MaxServiceOperations {
 		JavaType DTO_JavaType = new JavaType(serviceClazz.getFullyQualifiedTypeName()+"Result");
 		map.put(pathResolver.getIdentifier(Path.SRC_MAIN_JAVA, DTO_JavaType.getFullyQualifiedTypeName().replace('.', separator)+".java" ),"EntityServiceResult.java-template");
 
+		String rootPackage = projectOperations.getProjectMetadata().getTopLevelPackage().getFullyQualifiedPackageName();
+		
 		for (Entry<String, String> entry : map.entrySet()) {
 
 			MutableFile mutableFile = null;
@@ -133,6 +135,7 @@ public class MaxServiceOperationsImpl implements MaxServiceOperations {
 					input = input.replace("entity", entityName.toLowerCase());
 					input = input.replace("__ENTITY_LEVEL_PACKAGE__", entityClazz.getFullyQualifiedTypeName());
 					input = input.replace("__ENTITY_SERVICE__", serviceClazz.getSimpleTypeName());
+					input = input.replace("__PAGING_PACKAGE__", rootPackage + ".core.web.paging.Paging");
 					// Output the file for the user
 					mutableFile = fileManager.createFile(path);
 					FileCopyUtils.copy(input.getBytes(), mutableFile.getOutputStream());

@@ -1,12 +1,16 @@
 package __TOP_LEVEL_PACKAGE__;
 
 import __ENTITY_LEVEL_PACKAGE__;
+import __PAGING_PACKAGE__;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class __ENTITY_SERVICE__Impl implements __ENTITY_SERVICE__ {
 
+	@Autowired protected Paging paging;
+	
 	/**
 	 * under code 
 	 * auto-created by max-service addons
@@ -34,7 +38,12 @@ public class __ENTITY_SERVICE__Impl implements __ENTITY_SERVICE__ {
 	}
 
 	@Override
-	public __ENTITY_SERVICE__Result findEntityEntries(int firstResult, int maxResults) {
-		return new __ENTITY_SERVICE__Result(Entity.findEntityEntries(firstResult, maxResults),Entity.countEntitys(),null);
+	public __ENTITY_SERVICE__Result findEntityEntries(int currentPage, int startNumber) {
+		Long count = Entity.countEntitys();
+		return new __ENTITY_SERVICE__Result(Entity.findEntityEntries(startNumber, paging.getRowScale()),count, pageProcessor(currentPage, count, "", "", ""));
 	}
+	protected String pageProcessor(int currentPage, Long count, String pageUrl, String keyField, String keyWord) {
+		paging.setPage(count, (long)currentPage, pageUrl, "keyField="+keyField+"&keyWord="+keyWord);
+		return paging.getPage();
+	}	
 }
