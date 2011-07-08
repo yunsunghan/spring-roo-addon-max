@@ -1,0 +1,30 @@
+// Spring Roo 1.1.4.RELEASE [rev f787ce7] log opened at 2011-07-06 10:54:15
+addon create advanced --topLevelPackage com.ks.spring.roo.addon.maxshow --projectName spirng-roo-addon-max-show
+perform eclipse
+q
+// Spring Roo 1.1.4.RELEASE [rev f787ce7] log closed at 2011-07-06 11:38:11
+// Spring Roo 1.1.4.RELEASE [rev f787ce7] log opened at 2011-07-06 17:38:41
+perform assembly
+q
+// Spring Roo 1.1.4.RELEASE [rev f787ce7] log closed at 2011-07-06 17:44:06
+// Spring Roo 1.1.4.RELEASE [rev f787ce7] log opened at 2011-07-06 17:54:18
+perform assembly
+q
+// Spring Roo 1.1.4.RELEASE [rev f787ce7] log closed at 2011-07-06 17:54:36
+// Spring Roo 1.1.4.RELEASE [rev f787ce7] log opened at 2011-07-06 19:20:50
+perform assembly
+q
+// Spring Roo 1.1.4.RELEASE [rev f787ce7] log closed at 2011-07-06 19:21:52
+// Spring Roo 1.1.4.RELEASE [rev f787ce7] log opened at 2011-07-06 19:36:53
+perform assembly
+q
+// Spring Roo 1.1.4.RELEASE [rev f787ce7] log closed at 2011-07-06 19:37:56
+// Spring Roo 1.1.4.RELEASE [rev f787ce7] log opened at 2011-07-06 19:40:17
+osgi uninstall --bundleSymbolicName com.ks.spring.roo.addon.maxosgi
+osgi start --url http://localhost/korra-tracker/addon/com.ks.spring.roo.addon.maxosgi-1.0.0.M2.jar 
+q
+// Spring Roo 1.1.4.RELEASE [rev f787ce7] log closed at 2011-07-06 19:41:05
+// Spring Roo 1.1.4.RELEASE [rev f787ce7] log opened at 2011-07-07 08:49:36
+perform assembly
+q
+// Spring Roo 1.1.4.RELEASE [rev f787ce7] log closed at 2011-07-07 08:50:19
