@@ -1,16 +1,8 @@
 #summary One-sentence summary of this page.
 
-= Introduction =
-
-spring-roo-addon-max 설치에 대해서 설명한다.
-
-
-= install =
- * > osgi start --url http://spring-roo-addon-max.googlecode.com/svn/trunk/test/addon/com.ks.spring.roo.addon.maxservice-0.1.0.M1.jar 
- *  > osgi start --url http://spring-roo-addon-max.googlecode.com/svn/trunk/test/addon/com.ks.spring.roo.addon.maxweb-0.1.0.M1.jar 
- *  > osgi start --url http://spring-roo-addon-max.googlecode.com/svn/trunk/test/addon/com.ks.spring.roo.addon.maxsetup-0.1.0.M1.jar 
- *  > osgi ps
-= uninstall =
- *  > osgi uninstall --bundleSymbolicName com.ks.spring.roo.addon.maxservice
- *  > osgi uninstall --bundleSymbolicName com.ks.spring.roo.addon.maxweb
- *  > osgi uninstall --bundleSymbolicName com.ks.spring.roo.addon.maxsetup
+= 프로젝트 구성 =
+ * com.ks.spring.roo.addon.maxosgi
+ * com.ks.spring.roo.addon.maxshow
+ * com.ks.spring.roo.addon.maxsetup
+ * com.ks.spring.roo.addon.maxweb
+ * com.ks.spring.roo.addon.maxservice
